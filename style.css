@@ -91,7 +91,7 @@ header {
 /* --- Kartu Informasi Atas --- */
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     margin: 20px 0;
 }
@@ -100,14 +100,29 @@ header {
     border: 1px solid #333;
     padding: 15px;
     display: flex;
-    align-items: center;
-    gap: 15px;
+    flex-direction: column; /* Menumpuk ikon dan teks secara vertikal */
+    align-items: center; /* Menengahkan secara horizontal */
+    justify-content: center; /* Menengahkan secara vertikal */
+    text-align: center;
+    gap: 8px; /* Mengurangi jarak antara ikon dan teks */
     transition: all 0.2s ease;
+}
+
+.info-card > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .info-card:hover {
     border-color: var(--cyber-cyan);
     box-shadow: 0 0 5px var(--cyber-cyan);
 }
+
+/* Membuat kartu Settings dapat diklik */
+#settings-btn {
+    cursor: pointer;
+}
+
 .info-card .icon {
     font-size: 1.8em;
     color: var(--cyber-cyan);
@@ -171,7 +186,22 @@ header {
 .server-details .provider {
     font-weight: 600;
     color: var(--text-light);
+    display: flex; /* Menggunakan flexbox untuk penyejajaran */
+    align-items: center;
+    gap: 8px; /* Jarak antara kode negara dan nama provider */
 }
+
+.country-code {
+    background-color: #333;
+    color: var(--cyber-cyan);
+    padding: 2px 6px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1px solid var(--cyber-cyan);
+    box-shadow: 0 0 4px var(--cyber-cyan);
+}
+
 .server-details .address {
     font-family: var(--font-main);
     font-size: 0.9em;
@@ -357,4 +387,152 @@ header {
     color: var(--text-light);
     box-shadow: 0 0 15px var(--danger-color);
     border-color: var(--danger-color);
+}
+
+/* --- Gaya Input Worker Ping --- */
+#worker-input-card {
+    padding: 0;
+    position: relative;
+}
+
+#ping-worker-url {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    padding: 15px 15px 15px 50px;
+    color: var(--text-light);
+    font-size: 1em;
+    font-family: var(--font-main);
+    transition: all 0.2s ease;
+}
+
+#ping-worker-url:focus {
+    outline: none;
+    border-color: var(--cyber-cyan);
+    box-shadow: 0 0 10px var(--cyber-cyan);
+}
+
+#worker-input-card .icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* --- Gaya Dropdown Kustom --- */
+#country-filter-container {
+    /* Padding now inherited from .info-card for consistency */
+    position: relative;
+    padding: 15px; /* Explicitly reset to match .info-card */
+}
+
+.custom-dropdown {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.dropdown-selected {
+    width: 100%;
+    height: 100%;
+    padding: 0; /* Remove padding to allow perfect centering */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center text horizontally */
+    color: var(--cyber-cyan); /* Set color to cyan to match other cards */
+    font-size: 1.1em; /* Match font-size of other h4 elements */
+    font-weight: 600; /* Match font-weight of other h4 elements */
+    font-family: var(--font-main);
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.dropdown-selected:focus,
+.custom-dropdown.active .dropdown-selected {
+    color: var(--cyber-cyan);
+}
+
+.dropdown-options {
+    position: absolute;
+    top: 105%;
+    left: 0;
+    right: 0;
+    background-color: var(--surface-light);
+    border: 1px solid var(--border-color);
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    display: none; /* Sembunyikan secara default */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.custom-dropdown.active .dropdown-options {
+    display: block; /* Tampilkan saat aktif */
+}
+
+.dropdown-options .option {
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #2a2a2a;
+}
+.dropdown-options .option:last-child {
+    border-bottom: none;
+}
+
+.dropdown-options .option:hover,
+.dropdown-options .option.selected {
+    background-color: var(--primary-demonic);
+    color: var(--text-light);
+    text-shadow: 0 0 5px var(--text-light);
+}
+
+/* Scrollbar styling */
+.dropdown-options::-webkit-scrollbar {
+    width: 8px;
+}
+.dropdown-options::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+.dropdown-options::-webkit-scrollbar-thumb {
+    background-color: var(--primary-demonic);
+    border: 2px solid var(--primary-demonic);
+}
+
+/* --- Responsif untuk Seluler --- */
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr); /* Ubah ke 2 kolom di seluler */
+        gap: 8px; /* Mengurangi jarak antar kartu */
+    }
+
+    .info-card {
+        padding: 8px; /* Mengurangi padding di dalam kartu */
+        gap: 8px;
+    }
+
+    .info-card .icon {
+        font-size: 1.5em; /* Memperkecil ikon */
+    }
+
+    .info-card p {
+        font-size: 0.8em; /* Memperkecil teks paragraf */
+    }
+
+    .info-card h4 {
+        font-size: 1em; /* Memperkecil teks judul */
+    }
+
+    .search-box input,
+    #ping-worker-url {
+        font-size: 0.9em;
+        padding-left: 40px; /* Sesuaikan padding untuk ikon yang lebih kecil */
+    }
+
+    .custom-dropdown .dropdown-selected {
+        font-size: 0.9em;
+    }
 }
