@@ -198,32 +198,44 @@ header {
     border-top: 2px solid var(--border-color);
     margin: 20px -15px -15px -15px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr; /* Diubah menjadi 1 kolom */
     gap: 15px;
     align-items: center;
     box-shadow: 0 -2px 15px -5px var(--border-color);
 }
+
+/* Penyesuaian untuk search-box di dalam info-grid */
+.info-card.search-box {
+    padding: 0; /* Hapus padding dari kartu */
+    position: relative; /* Agar ikon bisa diposisikan */
+}
+
 .search-box input {
     width: 100%;
-    background-color: var(--bg-dark);
-    border: 1px solid var(--border-color);
-    padding: 12px 12px 12px 40px;
+    height: 100%;
+    background-color: transparent;
+    border: none; /* Hapus border dari input */
+    padding: 15px 15px 15px 50px; /* Sesuaikan padding untuk ikon */
     color: var(--text-light);
     font-size: 1em;
+    font-family: var(--font-main);
     transition: all 0.2s ease;
 }
+
 .search-box input:focus {
     outline: none;
     border-color: var(--cyber-cyan);
     box-shadow: 0 0 10px var(--cyber-cyan);
 }
+
 .search-box .icon {
     position: absolute;
-    left: 12px;
+    left: 15px; /* Sesuaikan posisi kiri */
     top: 50%;
     transform: translateY(-50%);
     color: var(--cyber-cyan);
     text-shadow: 0 0 5px var(--cyber-cyan);
+    pointer-events: none; /* Agar tidak bisa diklik */
 }
 
 .control-buttons {
