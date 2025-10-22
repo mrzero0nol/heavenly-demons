@@ -183,6 +183,8 @@ header {
     font-weight: bold;
     padding: 4px 10px;
     font-size: 0.9em;
+    min-width: 60px;
+    text-align: center;
 }
 
 /* --- Footer & Kontrol --- */

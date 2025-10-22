@@ -266,12 +266,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 requestAnimationFrame(() => {
                     if (pingValue === -1) {
                         pingBadge.textContent = 'N/A';
-                        pingBadge.style.backgroundColor = 'var(--danger-color)';
+                        pingBadge.style.backgroundColor = '#555'; // Warna abu-abu netral
                     } else {
                         pingBadge.textContent = `${pingValue} ms`;
-                        if (pingValue < 300) pingBadge.style.backgroundColor = 'var(--primary-green)';
-                        else if (pingValue < 600) pingBadge.style.backgroundColor = '#fdd835';
-                        else pingBadge.style.backgroundColor = '#ff8a80';
+                        if (pingValue < 500) pingBadge.style.backgroundColor = 'var(--cyber-cyan)';
+                        else if (pingValue < 1000) pingBadge.style.backgroundColor = '#fdd835'; // Kuning
+                        else pingBadge.style.backgroundColor = 'var(--primary-demonic)'; // Merah
                     }
                 });
             }
