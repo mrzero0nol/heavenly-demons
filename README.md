@@ -4,38 +4,34 @@ Ini adalah aplikasi web statis untuk menghasilkan konfigurasi VLESS berdasarkan 
 
 ## Skrip Cloudflare Ping Worker
 
-Untuk fungsionalitas ping yang akurat, aplikasi ini mengandalkan Cloudflare Worker. Worker ini menerima permintaan dengan IP dan port, kemudian mengukur latensi koneksi TCP.
+Untuk fungsionalitas ping yang akurat, aplikasi ini mengandalkan Cloudflare Worker. Worker ini menerima permintaan dengan IP dan port, kemudian mengukur latensi koneksi HTTP ke target. Metode ini sangat kompatibel dan tidak memerlukan pengaturan khusus.
 
 ### Cara Deploy
 
 1.  Buat Worker baru di dasbor Cloudflare Anda.
 2.  Salin kode di bawah ini dan tempelkan ke editor Worker.
-3.  Buka tab **Settings** -> **Compatibility Flags**.
-4.  Tambahkan *compatibility flag* `sockets`. Ini **wajib** agar Worker dapat membuka koneksi TCP.
-5.  Klik **Deploy**.
-6.  Salin URL Worker yang telah di-deploy dan tempelkan ke kolom "URL Ping Kustom" di aplikasi web.
+3.  Klik **Deploy**.
+4.  Salin URL Worker yang telah di-deploy dan tempelkan ke kolom "URL Ping Kustom" di aplikasi web.
 
-### Kode Worker
+### Kode Worker (Sangat Kompatibel)
 
 ```javascript
-// Nama Worker: ping-tester-worker
-// Compatibility Flag yang dibutuhkan: "sockets"
+// Nama Worker: ping-tester-worker-http
+// TIDAK memerlukan compatibility flag
 
 export default {
   async fetch(request, env, ctx) {
-    // Set CORS headers to allow requests from any origin
+    // Set CORS headers
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     };
 
-    // Handle preflight requests for CORS
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
     }
 
-    // Only allow POST requests for ping tests
     if (request.method !== 'POST') {
       return new Response('Error: Method not allowed. Please use POST.', {
         status: 405,
@@ -53,15 +49,22 @@ export default {
         });
       }
 
+      // Gunakan AbortController untuk mengatur timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 detik timeout
+
       const startTime = Date.now();
 
-      // The core of the ping test: attempting a TCP connection
-      // This requires the "sockets" compatibility flag to be enabled in the Worker settings.
-      const socket = await connect({ hostname: ip, port: parseInt(port, 10) });
-      const endTime = Date.now();
+      // Metode alternatif: kirim permintaan HEAD dan ukur waktu respons.
+      // Ini mengukur latensi HTTP, yang merupakan proxy yang bagus untuk ping.
+      await fetch(`http://${ip}:${port}`, {
+        method: 'HEAD', // HEAD lebih ringan daripada GET
+        signal: controller.signal,
+        mode: 'no-cors' // Penting untuk menghindari error CORS di sisi worker
+      });
 
-      // Immediately close the socket as we only need the connection time
-      await socket.close();
+      const endTime = Date.now();
+      clearTimeout(timeoutId);
 
       const ping = endTime - startTime;
 
@@ -70,11 +73,10 @@ export default {
       });
 
     } catch (e) {
-      // If the connection fails for any reason (e.g., timeout, host unreachable),
-      // return a ping of -1. The client-side script interprets this as "N/A".
-      console.error(`Connection to ${ip}:${port} failed: ${e.message}`);
+      // Jika fetch gagal (timeout, koneksi ditolak, dll.)
+      console.error(`Fetch to ${ip}:${port} failed: ${e.message}`);
       return new Response(JSON.stringify({ ping: -1, error: e.message }), {
-        status: 200, // Return 200 OK so the client can parse the -1 ping value
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
