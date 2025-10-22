@@ -24,36 +24,47 @@
 
         <main>
             <div class="info-grid">
+                <!-- Baris 1: Kontrol Utama -->
+                <div class="info-card search-box">
+                    <span class="icon">🔍</span>
+                    <input type="text" id="search-input" placeholder="Cari server...">
+                </div>
+                <div class="info-card" id="country-filter-container">
+                    <span class="icon">🌍</span>
+                    <div class="custom-dropdown">
+                        <div class="dropdown-selected" tabindex="0">
+                            <span id="selected-country">Pilih Negara</span>
+                        </div>
+                        <div class="dropdown-options" id="country-options">
+                            <!-- Opsi diisi oleh script.js -->
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card" id="settings-btn">
+                    <span class="icon">⚙️</span>
+                    <div>
+                        <h4>Pengaturan</h4>
+                    </div>
+                </div>
+
+                <!-- Baris 2: Info & URL Kustom -->
+                <div class="info-card" id="worker-input-card">
+                    <span class="icon">🚀</span>
+                    <input type="text" id="ping-worker-url" placeholder="URL Ping Kustom...">
+                </div>
                 <div class="info-card">
                     <span class="icon">🌐</span>
                     <div>
-                        <p>Your ISP</p>
-                        <h4 id="isp-info">Detecting...</h4>
+                        <p>Provider</p>
+                        <h4 id="isp-info">Mendeteksi...</h4>
                     </div>
                 </div>
                 <div class="info-card">
                     <span class="icon">📍</span>
                     <div>
-                        <p>Your Location</p>
-                        <h4 id="location-info">Detecting...</h4>
+                        <p>Lokasi</p>
+                        <h4 id="location-info">Mendeteksi...</h4>
                     </div>
-                </div>
-                <div class="info-card" id="worker-info">
-                  <span class="icon">🚀</span>
-                  <div>
-                      <p>Active Worker Host</p>
-                      <h4>Loading...</h4>
-                  </div>
-                </div>
-                <div class="info-card">
-                    <span class="icon">🌍</span>
-                    <select id="country-filter">
-                        <option value="all">All Countries</option>
-                    </select>
-                </div>
-                <div class="info-card search-box">
-                    <span class="icon">🔍</span>
-                    <input type="text" id="search-input" placeholder="Cari provider atau negara...">
                 </div>
             </div>
 
@@ -66,7 +77,7 @@
     <footer class="controls-footer">
         <div class="control-buttons">
             <button class="btn" id="selected-count-btn">0 proxies</button>
-            <button class="btn" id="settings-btn">Settings</button>
+            <button class="btn" id="reping-btn">Ulangi Ping</button>
             <button class="btn primary" id="export-btn">Export</button>
         </div>
     </footer>
