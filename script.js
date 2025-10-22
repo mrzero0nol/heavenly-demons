@@ -373,11 +373,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 const name = `${server.country_code} ${server.provider} [${server.ip}]`;
                 const useTls = tlsSelect.value === 'true';
                 
-                const uri = `${protocolSelect.value}://${uuid}@${bugCdn}:${useTls ? 443 : 80}` +
+                // --- PERBAIKAN LOGIKA ---
+                // Alamat (Address) harus workerHost.
+                // Host header (host) harus bugCdn.
+                // SNI (sni) harus sama dengan alamat, yaitu workerHost.
+                const uri = `${protocolSelect.value}://${uuid}@${workerHost}:${useTls ? 443 : 80}` +
                             `?encryption=none&type=ws` +
-                            `&host=${workerHost}` +
+                            `&host=${bugCdn}` + // Menggunakan bugCdn sebagai Host header
                             `&security=${useTls ? 'tls' : 'none'}` +
-                            `&sni=${workerHost}` +
+                            `&sni=${workerHost}` + // SNI harus sama dengan alamat (workerHost)
                             `&path=${encodeURIComponent(path)}` +
                             `#${encodeURIComponent(name)}`;
                 outputUris.push(uri);
