@@ -75,15 +75,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 activePingTesterUrl = newUrl;
                 pingWorkerUrlInput.value = newUrl; // Tampilkan URL yang sudah dikoreksi kepada pengguna
                 localStorage.setItem('pingTesterUrl', newUrl);
-                showToast('URL Worker Ping diperbarui.');
-                pingAllVisibleServers();
+                showToast('URL Worker Ping diperbarui. Tekan Test Ping untuk memulai.');
             } else {
                 // Jika pengguna mengosongkan input, kembali ke default
                 activePingTesterUrl = DEFAULT_PING_TESTER_URL;
                 localStorage.removeItem('pingTesterUrl');
                 pingWorkerUrlInput.value = ''; // Kosongkan input untuk menampilkan placeholder
                 showToast('URL Worker Ping dikembalikan ke default.');
-                pingAllVisibleServers(); // Ping ulang dengan URL default
             }
         });
     }
@@ -223,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 serverListContainer.appendChild(card);
             });
         }
-        pingAllVisibleServers();
+        // pingAllVisibleServers(); // Dihapus untuk mencegah ping otomatis
     }
 
     async function detectUserInfo() {
@@ -293,11 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function pingAllVisibleServers() {
-        const CONCURRENCY_LIMIT = 15; // Batasi hingga 15 ping bersamaan
         const serverCards = Array.from(serverListContainer.querySelectorAll('.server-card'));
-        
-        // Buat pool promise
-        const pingTasks = [];
 
         for (const card of serverCards) {
             const serverId = card.dataset.serverId;
@@ -307,36 +301,28 @@ document.addEventListener('DOMContentLoaded', function() {
             const pingBadge = card.querySelector('.ping-badge');
 
             if (pingBadge) {
-                // Atur ulang badge sebelum memulai ping
+                // Atur ulang badge menjadi '...' sebelum ping
                 requestAnimationFrame(() => {
                     pingBadge.textContent = '...';
                     pingBadge.style.backgroundColor = '';
                 });
 
-                // Tambahkan tugas ping ke pool
-                pingTasks.push(async () => {
-                    const pingValue = await pingServer(ip, port);
+                // Tunggu hasil ping untuk server ini sebelum melanjutkan ke server berikutnya
+                const pingValue = await pingServer(ip, port);
 
-                    // Update UI setelah selesai
-                    requestAnimationFrame(() => {
-                        if (pingValue === -1) {
-                            pingBadge.textContent = 'N/A';
-                            pingBadge.style.backgroundColor = '#555';
-                        } else {
-                            pingBadge.textContent = `${pingValue} ms`;
-                            if (pingValue < 250) pingBadge.style.backgroundColor = 'var(--cyber-cyan)';
-                            else if (pingValue < 1000) pingBadge.style.backgroundColor = '#fdd835';
-                            else pingBadge.style.backgroundColor = 'var(--primary-demonic)';
-                        }
-                    });
+                // Perbarui UI dengan hasil ping
+                requestAnimationFrame(() => {
+                    if (pingValue === -1) {
+                        pingBadge.textContent = 'N/A';
+                        pingBadge.style.backgroundColor = '#555';
+                    } else {
+                        pingBadge.textContent = `${pingValue} ms`;
+                        if (pingValue < 250) pingBadge.style.backgroundColor = 'var(--cyber-cyan)';
+                        else if (pingValue < 1000) pingBadge.style.backgroundColor = '#fdd835';
+                        else pingBadge.style.backgroundColor = 'var(--primary-demonic)';
+                    }
                 });
             }
-        }
-
-        // Jalankan tugas dengan konkurensi terbatas
-        for (let i = 0; i < pingTasks.length; i += CONCURRENCY_LIMIT) {
-            const batch = pingTasks.slice(i, i + CONCURRENCY_LIMIT).map(task => task());
-            await Promise.all(batch);
         }
     }
 
