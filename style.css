@@ -572,10 +572,11 @@ header {
     .info-grid {
         grid-template-columns: repeat(2, 1fr); /* 2 kolom untuk seluler */
         grid-template-areas:
+            "search search"
+            "country country"
             "provider location"
-            "country settings"
-            "search worker"
-            "custom wildcard"; /* Menambahkan tombol baru */
+            "settings worker"
+            "custom wildcard";
         gap: 8px;
     }
 
