@@ -497,20 +497,20 @@ header {
     }
 
     .info-card {
-        padding: 8px; /* Mengurangi padding di dalam kartu */
-        gap: 8px;
+        padding: 5px; /* Mengurangi padding di dalam kartu */
+        gap: 4px;
     }
 
     .info-card .icon {
-        font-size: 1.5em; /* Memperkecil ikon */
+        font-size: 1.2em; /* Memperkecil ikon */
     }
 
     .info-card p {
-        font-size: 0.8em; /* Memperkecil teks paragraf */
+        font-size: 0.7em; /* Memperkecil teks paragraf */
     }
 
     .info-card h4 {
-        font-size: 1em; /* Memperkecil teks judul */
+        font-size: 0.85em; /* Memperkecil teks judul */
     }
 
     .search-box input,
