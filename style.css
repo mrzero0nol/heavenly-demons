@@ -487,40 +487,52 @@ header {
 /* --- Responsif untuk Seluler --- */
 @media (max-width: 768px) {
     .info-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 kolom untuk baris pertama */
+        grid-template-columns: repeat(3, 1fr); /* 3 kolom */
         grid-template-areas:
-            "search worker"  /* Cari & URL Kustom di baris 1 */
-            "country country" /* Negara di baris 2, mengambil lebar penuh */
-            "settings settings" /* Pengaturan di baris 3 */
-            "provider provider" /* Provider di baris 4 */
-            "location location"; /* Lokasi di baris 5 */
+            "provider location country"
+            "settings search worker";
         gap: 8px;
     }
 
     .info-card {
-        padding: 5px; /* Mengurangi padding di dalam kartu */
+        padding: 8px 4px; /* Atas/bawah 8px, Kiri/kanan 4px */
         gap: 4px;
+        min-height: 60px; /* Menetapkan tinggi minimum agar rapi */
     }
 
     .info-card .icon {
-        font-size: 1.2em; /* Memperkecil ikon */
+        font-size: 1.1em; /* Memperkecil ikon lagi */
     }
 
     .info-card p {
-        font-size: 0.7em; /* Memperkecil teks paragraf */
+        font-size: 0.65em; /* Memperkecil teks paragraf lagi */
     }
 
     .info-card h4 {
-        font-size: 0.85em; /* Memperkecil teks judul */
+        font-size: 0.75em; /* Memperkecil teks judul lagi */
     }
 
     .search-box input,
     #ping-worker-url {
-        font-size: 0.9em;
-        padding-left: 40px; /* Sesuaikan padding untuk ikon yang lebih kecil */
+        font-size: 0.8em;
+        padding: 8px; /* Menghapus padding-left yang tidak perlu */
     }
 
     .custom-dropdown .dropdown-selected {
-        font-size: 0.9em;
+        font-size: 0.75em;
+    }
+
+    /* Penyesuaian Footer untuk Seluler */
+    .controls-footer {
+        padding: 8px;
+        gap: 8px;
+    }
+
+    .control-buttons {
+        grid-template-columns: repeat(3, 1fr); /* 3 tombol sejajar */
+    }
+    .btn {
+        padding: 10px;
+        font-size: 0.8em;
     }
 }
