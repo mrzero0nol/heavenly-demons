@@ -393,14 +393,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 const path = `/${server.ip}-${server.port}`;
                 const name = `${server.country_code} ${server.provider} [${server.ip}]`;
                 const useTls = tlsSelect.value === 'true';
+                const port = useTls ? '443' : '80';
                 
-                // --- LOGIKA DIPERBAIKI ---
-                // Alamat (Address) harus IP:PORT dari server proxy.
-                // Host header (host) harus bugCdn.
-                // SNI (sni) harus workerHost.
-                const uri = `${protocolSelect.value}://${uuid}@${server.ip}:${server.port}` +
-                            `?encryption=none&type=ws` +
-                            `&host=${bugCdn}` + // Host header adalah Bug CDN
+                // --- LOGIKA BARU SESUAI CONTOH ---
+                // Alamat (Address) sekarang menggunakan Bug CDN.
+                // Port adalah 443 untuk TLS, 80 untuk non-TLS.
+                // Host header (host) sekarang menggunakan Worker Host.
+                // SNI (sni) tetap menggunakan Worker Host.
+                // Ditambahkan parameter flow.
+                const uri = `${protocolSelect.value}://${uuid}@${bugCdn}:${port}` +
+                            `?encryption=none&type=ws&flow=` +
+                            `&host=${workerHost}` + // Host header adalah Worker Host
                             `&security=${useTls ? 'tls' : 'none'}` +
                             `&sni=${workerHost}` + // SNI adalah Worker Host
                             `&path=${encodeURIComponent(path)}` +
