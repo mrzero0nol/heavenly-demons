@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const customServerModalOverlay = document.getElementById('custom-server-modal-overlay');
     const testWildcardModalOverlay = document.getElementById('test-wildcard-modal-overlay');
     const pingSettingsModalOverlay = document.getElementById('ping-settings-modal-overlay');
+    const editServerModalOverlay = document.getElementById('edit-server-modal-overlay'); // Modal baru
 
     // Tombol Aksi Modal
     const settingsDoneBtn = document.getElementById('settings-done-btn');
@@ -45,6 +46,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const serverNameInput = document.getElementById('server-name-input');
     const serverIpInput = document.getElementById('server-ip-input');
     const serverPortInput = document.getElementById('server-port-input');
+
+    // Input Edit Server
+    const editServerIdInput = document.getElementById('edit-server-id-input');
+    const editServerNameInput = document.getElementById('edit-server-name-input');
+    const editServerIpInput = document.getElementById('edit-server-ip-input');
+    const editServerPortInput = document.getElementById('edit-server-port-input');
+    const saveServerChangesBtn = document.getElementById('save-server-changes-btn');
 
     // Elemen Dropdown Kustom
     const countryDropdown = document.getElementById('country-filter-container').querySelector('.custom-dropdown');
@@ -302,7 +310,10 @@ document.addEventListener('DOMContentLoaded', function() {
             card.classList.add('selected');
         }
 
-        card.innerHTML = `
+    // Konten utama yang dapat diklik dibungkus untuk memisahkannya dari tombol aksi
+    const clickableArea = document.createElement('div');
+    clickableArea.className = 'server-card-clickable-area';
+    clickableArea.innerHTML = `
             <div class="server-details">
                 <p class="provider">
                     <span class="country-code">${server.country_code}</span>
@@ -312,7 +323,20 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <span class="ping-badge">...</span>
         `;
-        card.addEventListener('click', () => toggleServerSelection(card, server.id));
+    clickableArea.addEventListener('click', () => toggleServerSelection(card, server.id));
+    card.appendChild(clickableArea);
+
+    // Tambahkan tombol Edit/Hapus untuk server kustom
+    if (server.country_code === 'CUSTOM') {
+        const actionsContainer = document.createElement('div');
+        actionsContainer.className = 'card-actions';
+        actionsContainer.innerHTML = `
+            <button class="edit-btn" data-server-id="${server.id}">Edit</button>
+            <button class="delete-btn" data-server-id="${server.id}">Hapus</button>
+        `;
+        card.appendChild(actionsContainer);
+    }
+
         return card;
     }
 
@@ -407,6 +431,84 @@ document.addEventListener('DOMContentLoaded', function() {
         serverNameInput.value = '';
         serverIpInput.value = '';
         serverPortInput.value = '';
+    }
+
+    function handleDeleteCustomServer(serverId) {
+        if (!confirm('Apakah Anda yakin ingin menghapus server kustom ini?')) {
+            return;
+        }
+
+        let customServers = loadCustomServers();
+
+        // Hapus dari localStorage
+        const updatedCustomServers = customServers.filter(s => s.id !== serverId);
+        localStorage.setItem('customServers', JSON.stringify(updatedCustomServers));
+
+        // Hapus dari state allServers di memori
+        allServers = allServers.filter(s => s.id !== serverId);
+
+        // Jika server yang dihapus ada di set server yang dipilih, hapus juga dari sana
+        if (selectedServers.has(serverId)) {
+            selectedServers.delete(serverId);
+            updateSelectedCount();
+        }
+
+        applyAllFilters(); // Render ulang daftar server
+        showToast("Custom server berhasil dihapus.");
+    }
+
+    function handleSaveChanges() {
+        const serverIdToUpdate = editServerIdInput.value;
+        const newName = editServerNameInput.value.trim();
+        const newIp = editServerIpInput.value.trim();
+        const newPort = editServerPortInput.value.trim();
+
+        if (!newName || !newIp || !newPort) {
+            showToast("Harap isi semua kolom.", true);
+            return;
+        }
+
+        const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        if (!ipRegex.test(newIp)) {
+            showToast("Format IP address tidak valid.", true);
+            return;
+        }
+
+        if (isNaN(newPort) || newPort < 1 || newPort > 65535) {
+            showToast("Port harus berupa angka antara 1 dan 65535.", true);
+            return;
+        }
+
+        const newServerId = `${newIp}:${newPort}`;
+        let customServers = loadCustomServers();
+
+        const isDuplicate = allServers.some(s => s.id === newServerId && s.id !== serverIdToUpdate);
+        if (isDuplicate) {
+            showToast("Server dengan IP dan Port ini sudah ada.", true);
+            return;
+        }
+
+        const updatedCustomServers = customServers.map(server => {
+            if (server.id === serverIdToUpdate) {
+                return { ...server, id: newServerId, ip: newIp, port: newPort, provider: newName };
+            }
+            return server;
+        });
+        localStorage.setItem('customServers', JSON.stringify(updatedCustomServers));
+
+        const serverIndexInMemory = allServers.findIndex(s => s.id === serverIdToUpdate);
+        if (serverIndexInMemory !== -1) {
+            allServers[serverIndexInMemory] = { ...allServers[serverIndexInMemory], id: newServerId, ip: newIp, port: newPort, provider: newName };
+        }
+
+        if (serverIdToUpdate !== newServerId && selectedServers.has(serverIdToUpdate)) {
+            selectedServers.delete(serverIdToUpdate);
+            selectedServers.add(newServerId);
+        }
+
+        closeModal(editServerModalOverlay);
+        applyAllFilters();
+        showToast("Custom server berhasil diperbarui.");
     }
 
     // =======================================================
@@ -637,6 +739,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function openTestWildcardModal() { testWildcardModalOverlay.classList.add('visible'); }
     function openPingSettingsModal() { pingSettingsModalOverlay.classList.add('visible'); }
 
+    function openEditModal(server) {
+        editServerIdInput.value = server.id;
+        editServerNameInput.value = server.provider;
+        editServerIpInput.value = server.ip;
+        editServerPortInput.value = server.port;
+        editServerModalOverlay.classList.add('visible');
+    }
+
     function handleSavePingSettings() {
         let newUrl = pingWorkerUrlInput.value.trim();
 
@@ -674,7 +784,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // =======================================================
     // EVENT LISTENERS
     // =======================================================
-    
+
+    serverListContainer.addEventListener('click', function(event) {
+        // Delegasi event untuk tombol hapus
+        if (event.target.classList.contains('delete-btn')) {
+            const serverId = event.target.dataset.serverId;
+            handleDeleteCustomServer(serverId);
+        }
+
+        // Delegasi event untuk tombol edit
+        if (event.target.classList.contains('edit-btn')) {
+            const serverId = event.target.dataset.serverId;
+            const serverToEdit = allServers.find(s => s.id === serverId);
+            if (serverToEdit) {
+                openEditModal(serverToEdit);
+            }
+        }
+    });
+
     selectedCountBtn.addEventListener('click', () => {
         if (selectedServers.size === 0) return;
         isShowingOnlySelected = !isShowingOnlySelected;
@@ -716,6 +843,7 @@ document.addEventListener('DOMContentLoaded', function() {
     addServerBtn.addEventListener('click', handleAddCustomServer);
     runWildcardTestBtn.addEventListener('click', handleWildcardTest);
     savePingSettingsBtn.addEventListener('click', handleSavePingSettings);
+    saveServerChangesBtn.addEventListener('click', handleSaveChanges); // Listener baru
 
     exportBtn.addEventListener('click', exportProxies);
     repingBtn.addEventListener('click', () => {

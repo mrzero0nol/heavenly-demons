@@ -173,16 +173,21 @@ header {
 }
 .server-card {
     background-color: var(--surface-light);
-    padding: 10px; /* Diperkecil */
-    cursor: pointer;
+    padding: 10px;
     border: 1px solid #333;
-    border-left: 4px solid #555; /* Sedikit lebih tipis */
+    border-left: 4px solid #555;
     transition: all 0.2s ease;
     display: flex;
-    flex-direction: column; /* Ubah ke kolom untuk tata letak vertikal */
+    flex-direction: column;
     justify-content: space-between;
-    align-items: stretch; /* Memastikan elemen meregang penuh */
-    min-height: 80px; /* Tinggi minimum agar rapi */
+    min-height: 80px;
+}
+.server-card-clickable-area {
+    cursor: pointer;
+    flex-grow: 1; /* Memastikan area ini mengisi ruang yang tersedia */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 .server-card:hover {
     border-left-color: var(--cyber-cyan);
@@ -193,6 +198,42 @@ header {
     border-left-color: var(--primary-demonic);
     background-color: #221a1d;
     box-shadow: inset 0 0 10px var(--primary-demonic), 0 0 10px var(--primary-demonic);
+}
+.card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #333;
+}
+.card-actions button {
+    flex-grow: 1;
+    background: transparent;
+    border: 1px solid;
+    padding: 5px;
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+.card-actions .edit-btn {
+    color: var(--cyber-cyan);
+    border-color: var(--cyber-cyan);
+}
+.card-actions .edit-btn:hover {
+    background-color: var(--cyber-cyan);
+    color: var(--text-dark);
+    box-shadow: 0 0 8px var(--cyber-cyan);
+}
+.card-actions .delete-btn {
+    color: var(--primary-demonic);
+    border-color: var(--primary-demonic);
+}
+.card-actions .delete-btn:hover {
+    background-color: var(--primary-demonic);
+    color: var(--text-light);
+    box-shadow: 0 0 8px var(--primary-demonic);
 }
 .server-details .provider {
     font-weight: 600;
