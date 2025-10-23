@@ -5,6 +5,7 @@
     --bg-dark: #0a0a0a;
     --primary-demonic: #ff003c; /* Merah Neon */
     --cyber-cyan: #00f6ff;      /* Sian Neon */
+    --primary-green: #00ff6a;   /* Hijau Neon Baru */
     --text-light: #e0e0e0;
     --text-dark: #0a0a0a;
     --surface-light: #1a1a1a;
@@ -155,6 +156,12 @@ header {
 }
 
 /* --- Daftar Server --- */
+.server-list-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
 .server-group-title {
     text-transform: uppercase;
     font-weight: bold;
@@ -162,18 +169,20 @@ header {
     margin: 30px 0 10px 0;
     font-size: 0.9em;
     text-shadow: 0 0 5px var(--primary-demonic);
+    grid-column: 1 / -1; /* Judul mencakup semua kolom */
 }
 .server-card {
     background-color: var(--surface-light);
-    padding: 15px;
-    margin-bottom: 10px;
+    padding: 10px; /* Diperkecil */
     cursor: pointer;
     border: 1px solid #333;
-    border-left: 5px solid #555;
+    border-left: 4px solid #555; /* Sedikit lebih tipis */
     transition: all 0.2s ease;
     display: flex;
+    flex-direction: column; /* Ubah ke kolom untuk tata letak vertikal */
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch; /* Memastikan elemen meregang penuh */
+    min-height: 80px; /* Tinggi minimum agar rapi */
 }
 .server-card:hover {
     border-left-color: var(--cyber-cyan);
@@ -190,14 +199,16 @@ header {
     color: var(--text-light);
     display: flex; /* Menggunakan flexbox untuk penyejajaran */
     align-items: center;
-    gap: 8px; /* Jarak antara kode negara dan nama provider */
+    gap: 5px; /* Diperkecil */
+    font-size: 0.9em; /* Sedikit diperkecil */
+    flex-wrap: wrap; /* Izinkan wrap jika nama provider panjang */
 }
 
 .country-code {
     background-color: #333;
     color: var(--cyber-cyan);
-    padding: 2px 6px;
-    font-size: 0.8em;
+    padding: 2px 5px;
+    font-size: 0.7em; /* Diperkecil */
     font-weight: bold;
     text-transform: uppercase;
     border: 1px solid var(--cyber-cyan);
@@ -206,17 +217,35 @@ header {
 
 .server-details .address {
     font-family: var(--font-main);
-    font-size: 0.9em;
+    font-size: 0.8em; /* Diperkecil */
     color: #aaa;
+    margin-bottom: 8px; /* Beri jarak ke ping badge */
 }
 .ping-badge {
     background-color: #333;
     color: var(--text-light);
     font-weight: bold;
-    padding: 4px 10px;
-    font-size: 0.9em;
-    min-width: 60px;
+    padding: 3px 8px; /* Diperkecil */
+    font-size: 0.8em; /* Diperkecil */
     text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transisi halus */
+    width: 100%; /* Lebar penuh */
+    margin-top: auto; /* Dorong ke bawah */
+}
+
+.ping-badge.good {
+    background-color: var(--primary-green);
+    color: var(--text-dark); /* Teks hitam */
+    box-shadow: 0 0 8px var(--primary-green);
+}
+
+.ping-badge.medium {
+    background-color: #fdd835; /* Kuning */
+    color: var(--text-dark);
+}
+
+.ping-badge.bad {
+    background-color: var(--primary-demonic);
 }
 
 /* --- Footer & Kontrol --- */
@@ -493,6 +522,10 @@ header {
 
 /* --- Responsif untuk Seluler --- */
 @media (max-width: 768px) {
+    .server-list-grid {
+        grid-template-columns: 1fr; /* Kembali ke satu kolom di seluler */
+    }
+
     .info-grid {
         grid-template-columns: repeat(2, 1fr); /* 2 kolom untuk seluler */
         grid-template-areas:

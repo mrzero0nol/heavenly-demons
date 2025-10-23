@@ -255,6 +255,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        const gridContainer = document.createElement('div');
+        gridContainer.className = 'server-list-grid';
+
         const customServers = serversToRender.filter(s => s.country_code === 'CUSTOM');
         const regularServers = serversToRender.filter(s => s.country_code !== 'CUSTOM');
 
@@ -263,11 +266,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const groupTitle = document.createElement('h3');
             groupTitle.className = 'server-group-title';
             groupTitle.textContent = 'Custom Servers';
-            serverListContainer.appendChild(groupTitle);
+            gridContainer.appendChild(groupTitle);
 
             customServers.forEach(server => {
                 const card = createServerCard(server);
-                serverListContainer.appendChild(card);
+                gridContainer.appendChild(card);
             });
         }
 
@@ -281,14 +284,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const groupTitle = document.createElement('h3');
             groupTitle.className = 'server-group-title';
             groupTitle.textContent = provider;
-            serverListContainer.appendChild(groupTitle);
+            gridContainer.appendChild(groupTitle);
             
             groupedByProvider[provider].forEach(server => {
                 const card = createServerCard(server);
-                serverListContainer.appendChild(card);
+                gridContainer.appendChild(card);
             });
         }
-        // pingAllVisibleServers(); // Dihapus untuk mencegah ping otomatis
+        serverListContainer.appendChild(gridContainer);
     }
 
     function createServerCard(server) {
@@ -506,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Atur ulang badge menjadi '...' sebelum ping
                 requestAnimationFrame(() => {
                     pingBadge.textContent = '...';
-                    pingBadge.style.backgroundColor = '';
+                    pingBadge.className = 'ping-badge'; // Reset kelas
                 });
 
                 // Tunggu hasil ping untuk server ini sebelum melanjutkan ke server berikutnya
@@ -514,14 +517,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Perbarui UI dengan hasil ping
                 requestAnimationFrame(() => {
+                    pingBadge.classList.remove('good', 'medium', 'bad'); // Hapus kelas lama
                     if (pingValue === -1) {
                         pingBadge.textContent = 'N/A';
-                        pingBadge.style.backgroundColor = '#555';
                     } else {
                         pingBadge.textContent = `${pingValue} ms`;
-                        if (pingValue < 250) pingBadge.style.backgroundColor = 'var(--cyber-cyan)';
-                        else if (pingValue < 1000) pingBadge.style.backgroundColor = '#fdd835';
-                        else pingBadge.style.backgroundColor = 'var(--primary-demonic)';
+                        if (pingValue < 250) {
+                            pingBadge.classList.add('good');
+                        } else if (pingValue < 1000) {
+                            pingBadge.classList.add('medium');
+                        } else {
+                            pingBadge.classList.add('bad');
+                        }
                     }
                 });
             }
