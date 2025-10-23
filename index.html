@@ -63,9 +63,12 @@
                 </div>
 
                 <!-- Baris 2: Info & URL Kustom -->
-                <div class="info-card" id="worker-input-card" style="grid-area: worker;">
-
-                    <input type="text" id="ping-worker-url" placeholder="URL Ping Kustom...">
+                <div class="info-card" id="ping-settings-btn" style="grid-area: worker;">
+                    <span class="icon">📡</span>
+                    <div>
+                        <h4>Ping Server</h4>
+                        <p id="ping-mode-status">Mode: Browser</p>
+                    </div>
                 </div>
                 <div class="info-card" style="grid-area: provider;">
 
@@ -177,6 +180,22 @@
             <div id="wildcard-test-result" class="test-result">
                 <!-- Hasil tes akan muncul di sini -->
             </div>
+        </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- MODAL PING SETTINGS                                     -->
+    <!-- ======================================================= -->
+    <div class="modal-overlay" id="ping-settings-modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" data-modal-id="ping-settings-modal-overlay">&times;</button>
+            <h2>Pengaturan Ping Server</h2>
+            <p>Kosongkan input di bawah untuk menggunakan mode ping via Browser (default).</p>
+            <div class="form-group">
+                <label for="ping-worker-url-input">URL Ping Kustom</label>
+                <input type="text" id="ping-worker-url-input" placeholder="https://worker.anda.workers.dev">
+            </div>
+            <button class="btn primary" id="save-ping-settings-btn">Simpan</button>
         </div>
     </div>
     

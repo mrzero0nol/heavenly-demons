@@ -125,7 +125,8 @@ header {
 /* Membuat kartu Settings dapat diklik */
 #settings-btn,
 #custom-server-btn,
-#test-wildcard-btn {
+#test-wildcard-btn,
+#ping-settings-btn {
     cursor: pointer;
 }
 
