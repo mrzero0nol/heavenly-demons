@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Referensi Elemen DOM ---
     const serverListContainer = document.getElementById('server-list');
     const searchInput = document.getElementById('search-input');
-    const pingWorkerUrlInput = document.getElementById('ping-worker-url');
     const selectedCountBtn = document.getElementById('selected-count-btn');
     const repingBtn = document.getElementById('reping-btn');
     const ispInfo = document.getElementById('isp-info');
@@ -23,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const settingsModalOverlay = document.getElementById('settings-modal-overlay');
     const customServerModalOverlay = document.getElementById('custom-server-modal-overlay');
     const testWildcardModalOverlay = document.getElementById('test-wildcard-modal-overlay');
+    const pingSettingsModalOverlay = document.getElementById('ping-settings-modal-overlay');
 
     // Tombol Aksi Modal
     const settingsDoneBtn = document.getElementById('settings-done-btn');
@@ -32,6 +32,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Tombol Pembuka Modal
     const customServerBtn = document.getElementById('custom-server-btn');
     const testWildcardBtn = document.getElementById('test-wildcard-btn');
+    const pingSettingsBtn = document.getElementById('ping-settings-btn');
+    const pingModeStatus = document.getElementById('ping-mode-status');
+    const pingWorkerUrlInput = document.getElementById('ping-worker-url-input');
+    const savePingSettingsBtn = document.getElementById('save-ping-settings-btn');
 
     // Input & Result Wildcard
     const wildcardDomainInput = document.getElementById('wildcard-domain-input');
@@ -57,54 +61,24 @@ document.addEventListener('DOMContentLoaded', function() {
     let allServers = [];
     let selectedServers = new Set();
     let isShowingOnlySelected = false;
-    let activePingTesterUrl = DEFAULT_PING_TESTER_URL;
+    let pingMode = 'browser'; // 'browser' or 'worker'
+    let customPingUrl = '';
 
     // =======================================================
     // FUNGSI INTI & PEMBANTU
     // =======================================================
 
-    function setupPingWorkerUrl() {
-        // Selalu gunakan URL default sebagai dasar, tetapi biarkan input bisa kosong
-        activePingTesterUrl = DEFAULT_PING_TESTER_URL;
-        let savedUrl = localStorage.getItem('pingTesterUrl');
-
+    function setupPingMode() {
+        const savedUrl = localStorage.getItem('pingTesterUrl');
         if (savedUrl) {
-            // PERBAIKAN: Pastikan URL yang tersimpan menggunakan HTTPS
-            savedUrl = savedUrl.trim();
-            if (!savedUrl.startsWith('http://') && !savedUrl.startsWith('https://')) {
-                savedUrl = 'https://' + savedUrl;
-            }
-            if (savedUrl.startsWith('http://')) {
-                savedUrl = savedUrl.replace('http://', 'https://');
-            }
+            pingMode = 'worker';
+            customPingUrl = savedUrl;
             pingWorkerUrlInput.value = savedUrl;
-            activePingTesterUrl = savedUrl;
+            pingModeStatus.textContent = 'Mode: Custom URL';
+        } else {
+            pingMode = 'browser';
+            pingModeStatus.textContent = 'Mode: Browser';
         }
-        // Jangan set nilai default ke input field, biarkan placeholder yang bekerja
-
-        pingWorkerUrlInput.addEventListener('change', () => {
-            let newUrl = pingWorkerUrlInput.value.trim();
-            if (newUrl) {
-                // PERBAIKAN: Pastikan URL selalu HTTPS untuk menghindari redirect yang mengubah POST menjadi GET.
-                if (!newUrl.startsWith('http://') && !newUrl.startsWith('https://')) {
-                    newUrl = 'https://' + newUrl;
-                }
-                if (newUrl.startsWith('http://')) {
-                    newUrl = newUrl.replace('http://', 'https://');
-                }
-
-                activePingTesterUrl = newUrl;
-                pingWorkerUrlInput.value = newUrl; // Tampilkan URL yang sudah dikoreksi kepada pengguna
-                localStorage.setItem('pingTesterUrl', newUrl);
-                showToast('URL Worker Ping diperbarui. Tekan Test Ping untuk memulai.');
-            } else {
-                // Jika pengguna mengosongkan input, kembali ke default
-                activePingTesterUrl = DEFAULT_PING_TESTER_URL;
-                localStorage.removeItem('pingTesterUrl');
-                pingWorkerUrlInput.value = ''; // Kosongkan input untuk menampilkan placeholder
-                showToast('URL Worker Ping dikembalikan ke default.');
-            }
-        });
     }
 
     function generateUUIDv4() {
@@ -135,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(loader);
 
         try {
-            setupPingWorkerUrl();
+            setupPingMode();
             detectUserInfo();
             populateSettingsFromUrl();
 
@@ -424,41 +398,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // =======================================================
-    // FUNGSI PING (VERSI 4.0 - WORKER-BASED PING)
+    // FUNGSI PING (DUAL MODE: BROWSER & WORKER)
     // =======================================================
     
-    async function pingServer(ip, port, timeout = 8000) {
-        const controller = new AbortController();
-        const id = setTimeout(() => controller.abort(), timeout);
+    async function pingServer(ip, port, timeout = 5000) {
+        if (pingMode === 'worker') {
+            // --- Mode Worker: Menggunakan URL kustom ---
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
 
-        try {
-            const response = await fetch(activePingTesterUrl, {
-                method: 'POST',
-                signal: controller.signal,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ip, port }),
-            });
-
-            clearTimeout(id);
-
-            if (!response.ok) {
-                console.error(`Ping worker returned an error for ${ip}:${port}: ${response.statusText}`);
+            try {
+                const response = await fetch(customPingUrl, {
+                    method: 'POST',
+                    signal: controller.signal,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip, port }),
+                });
+                clearTimeout(id);
+                if (!response.ok) return -1;
+                const data = await response.json();
+                return data.ping;
+            } catch (error) {
+                clearTimeout(id);
                 return -1;
             }
 
-            const data = await response.json();
-            return data.ping;
+        } else {
+            // --- Mode Browser: Menggunakan fetch HEAD request ---
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            const startTime = Date.now();
 
-        } catch (error) {
-            clearTimeout(id);
-            if (error.name === 'AbortError') {
-                console.warn(`Ping request for ${ip}:${port} timed out.`);
-            } else {
-                console.error(`Error pinging ${ip}:${port} via worker:`, error);
+            try {
+                // Kita tidak peduli dengan responsnya, hanya waktu yang dibutuhkan untuk terhubung
+                await fetch(`http://${ip}:${port}`, {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    signal: controller.signal
+                });
+                clearTimeout(id);
+                return Date.now() - startTime;
+            } catch (error) {
+                clearTimeout(id);
+                return -1; // Gagal terhubung atau timeout
             }
-            return -1;
         }
     }
 
@@ -598,6 +581,36 @@ document.addEventListener('DOMContentLoaded', function() {
     function openCustomServerModal() { customServerModalOverlay.classList.add('visible'); }
     function closeCustomServerModal() { customServerModalOverlay.classList.remove('visible'); }
     function openTestWildcardModal() { testWildcardModalOverlay.classList.add('visible'); }
+    function openPingSettingsModal() { pingSettingsModalOverlay.classList.add('visible'); }
+
+    function handleSavePingSettings() {
+        let newUrl = pingWorkerUrlInput.value.trim();
+
+        if (newUrl) {
+            // Validasi sederhana dan pastikan https
+            if (!newUrl.startsWith('http://') && !newUrl.startsWith('https://')) {
+                newUrl = 'https://' + newUrl;
+            }
+            if (newUrl.startsWith('http://')) {
+                newUrl = newUrl.replace('http://', 'https://');
+            }
+
+            localStorage.setItem('pingTesterUrl', newUrl);
+            pingMode = 'worker';
+            customPingUrl = newUrl;
+            pingWorkerUrlInput.value = newUrl; // Perbarui input dengan URL yang sudah dikoreksi
+            pingModeStatus.textContent = 'Mode: Custom URL';
+            showToast('Mode Ping diubah ke Custom URL.');
+        } else {
+            localStorage.removeItem('pingTesterUrl');
+            pingMode = 'browser';
+            customPingUrl = '';
+            pingModeStatus.textContent = 'Mode: Browser';
+            showToast('Mode Ping dikembalikan ke Browser (Default).');
+        }
+
+        closeModal(pingSettingsModalOverlay);
+    }
 
     // Fungsi Generik untuk menutup modal
     function closeModal(modalElement) {
@@ -627,6 +640,7 @@ document.addEventListener('DOMContentLoaded', function() {
     settingsBtn.addEventListener('click', openSettingsModal);
     customServerBtn.addEventListener('click', openCustomServerModal);
     testWildcardBtn.addEventListener('click', openTestWildcardModal);
+    pingSettingsBtn.addEventListener('click', openPingSettingsModal);
 
     // Menangani penutupan semua modal
     document.querySelectorAll('.modal-overlay').forEach(modal => {
@@ -649,6 +663,7 @@ document.addEventListener('DOMContentLoaded', function() {
     settingsDoneBtn.addEventListener('click', closeSettingsModal);
     addServerBtn.addEventListener('click', handleAddCustomServer);
     runWildcardTestBtn.addEventListener('click', handleWildcardTest);
+    savePingSettingsBtn.addEventListener('click', handleSavePingSettings);
 
     exportBtn.addEventListener('click', exportProxies);
     repingBtn.addEventListener('click', () => {
