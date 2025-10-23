@@ -25,9 +25,16 @@
         <main>
             <div class="info-grid">
                 <!-- Baris 1: Kontrol Utama -->
-                <div class="info-card search-box" style="grid-area: search;">
-
-                    <input type="text" id="search-input" placeholder="Cari server...">
+                <div class="info-card" id="provider-filter-container" style="grid-area: search;">
+                    <span class="icon">🛰️</span>
+                    <div class="custom-dropdown">
+                        <div class="dropdown-selected" tabindex="0">
+                            <span id="selected-provider">Pilih Server VPN</span>
+                        </div>
+                        <div class="dropdown-options" id="provider-options">
+                            <!-- Opsi diisi oleh script.js -->
+                        </div>
+                    </div>
                 </div>
                 <div class="info-card" id="country-filter-container" style="grid-area: country;">
                     <span class="icon">🌍</span>
