@@ -92,25 +92,25 @@ header {
 /* --- Kartu Informasi Atas --- */
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     grid-template-areas:
-        "provider location"
-        "country settings"
-        "search worker"
-        "custom wildcard";
-    gap: 10px;
+        "provider provider provider location location location"
+        "country country settings settings search search"
+        "worker worker wildcard wildcard custom custom";
+    gap: 8px;
     margin: 20px 0;
 }
 .info-card {
     background-color: var(--surface-light);
     border: 1px solid #333;
-    padding: 12px;
+    padding: 8px;
     display: flex;
     flex-direction: column; /* Menumpuk ikon dan teks secara vertikal */
     align-items: center; /* Menengahkan secara horizontal */
     justify-content: center; /* Menengahkan secara vertikal */
     text-align: center;
     transition: all 0.2s ease;
+    min-height: 70px; /* Menyamakan tinggi */
 }
 
 .info-card > div {
@@ -132,11 +132,11 @@ header {
 }
 
 .info-card p {
-    font-size: 0.8em;
+    font-size: 0.75em; /* Diperkecil */
     color: #aaa;
 }
 .info-card h4 {
-    font-size: 1em;
+    font-size: 0.9em; /* Diperkecil */
     font-family: var(--font-main);
     font-weight: 600;
     color: var(--cyber-cyan);
@@ -574,12 +574,12 @@ header {
     }
 
     .info-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 kolom untuk seluler */
+        grid-template-columns: repeat(2, 1fr); /* Kembali ke 2 kolom di seluler */
         grid-template-areas:
             "provider location"
             "country settings"
             "search worker"
-            "custom wildcard"; /* Menambahkan tombol baru */
+            "custom wildcard";
         gap: 8px;
     }
 
