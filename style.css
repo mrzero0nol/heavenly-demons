@@ -523,7 +523,7 @@ header {
 /* --- Responsif untuk Seluler --- */
 @media (max-width: 768px) {
     .server-list-grid {
-        grid-template-columns: 1fr; /* Kembali ke satu kolom di seluler */
+        grid-template-columns: repeat(2, 1fr); /* 2 kolom di layar kecil */
     }
 
     .info-grid {
