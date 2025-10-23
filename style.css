@@ -48,6 +48,10 @@ header {
     padding: 15px 0;
     border-bottom: 2px solid var(--border-color);
     box-shadow: 0 2px 15px -5px var(--border-color);
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-dark);
+    z-index: 1000;
 }
 
 .title-container {
@@ -554,6 +558,29 @@ header {
     color: var(--text-light);
     text-shadow: 0 0 5px var(--text-light);
 }
+
+/* --- Kontrol Menu & Pemisah --- */
+.menu-controls {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+}
+
+#toggle-menu-btn {
+    width: 100%;
+    max-width: 300px; /* Batasi lebar tombol */
+}
+
+.info-grid {
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.info-grid.hidden {
+    display: none;
+}
+
 
 /* Scrollbar styling */
 .dropdown-options::-webkit-scrollbar {
