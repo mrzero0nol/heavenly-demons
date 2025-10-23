@@ -95,7 +95,8 @@ header {
     grid-template-areas:
         "provider location"
         "country settings"
-        "search worker";
+        "search worker"
+        "custom wildcard";
     gap: 10px;
     margin: 20px 0;
 }
@@ -122,7 +123,9 @@ header {
 }
 
 /* Membuat kartu Settings dapat diklik */
-#settings-btn {
+#settings-btn,
+#custom-server-btn,
+#test-wildcard-btn {
     cursor: pointer;
 }
 
@@ -323,6 +326,22 @@ header {
     max-width: 500px;
     border: 2px solid var(--primary-demonic);
     box-shadow: 0 0 25px var(--primary-demonic);
+    position: relative; /* Diperlukan untuk memposisikan tombol tutup */
+}
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 2em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.close-btn:hover {
+    color: var(--primary-demonic);
+    text-shadow: 0 0 8px var(--primary-demonic);
 }
 .form-group label {
     display: block;
@@ -347,6 +366,16 @@ header {
     outline: none;
     border-color: var(--cyber-cyan);
     box-shadow: 0 0 10px var(--cyber-cyan);
+}
+
+.test-result {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: var(--surface-light);
+    border: 1px solid #333;
+    min-height: 40px;
+    color: var(--text-light);
+    font-family: 'Courier New', Courier, monospace;
 }
 
 /* --- Toast Notification --- */
@@ -487,10 +516,12 @@ header {
 /* --- Responsif untuk Seluler --- */
 @media (max-width: 768px) {
     .info-grid {
-        grid-template-columns: repeat(3, 1fr); /* 3 kolom */
+        grid-template-columns: repeat(2, 1fr); /* 2 kolom untuk seluler */
         grid-template-areas:
-            "provider location country"
-            "settings search worker";
+            "provider location"
+            "country settings"
+            "search worker"
+            "custom wildcard"; /* Menambahkan tombol baru */
         gap: 8px;
     }
 
