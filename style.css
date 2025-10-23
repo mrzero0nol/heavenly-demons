@@ -573,15 +573,6 @@ header {
         grid-template-columns: repeat(2, 1fr); /* 2 kolom di layar kecil */
     }
 
-    .info-grid {
-        grid-template-columns: repeat(2, 1fr); /* Kembali ke 2 kolom di seluler */
-        grid-template-areas:
-            "provider location"
-            "country settings"
-            "search worker"
-            "custom wildcard";
-        gap: 8px;
-    }
 
     .info-card {
         padding: 8px 4px; /* Atas/bawah 8px, Kiri/kanan 4px */
