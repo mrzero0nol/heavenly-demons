@@ -243,6 +243,7 @@ header {
     gap: 5px; /* Diperkecil */
     font-size: 0.9em; /* Sedikit diperkecil */
     flex-wrap: wrap; /* Izinkan wrap jika nama provider panjang */
+    word-break: break-all;
 }
 
 .country-code {
@@ -261,6 +262,7 @@ header {
     font-size: 0.8em; /* Diperkecil */
     color: #aaa;
     margin-bottom: 8px; /* Beri jarak ke ping badge */
+    word-break: break-all;
 }
 .ping-badge {
     background-color: #333;
@@ -572,11 +574,10 @@ header {
     .info-grid {
         grid-template-columns: repeat(2, 1fr); /* 2 kolom untuk seluler */
         grid-template-areas:
-            "search search"
-            "country country"
             "provider location"
-            "settings worker"
-            "custom wildcard";
+            "country settings"
+            "search worker"
+            "custom wildcard"; /* Menambahkan tombol baru */
         gap: 8px;
     }
 
