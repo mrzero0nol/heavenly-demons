@@ -873,6 +873,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // --- Fungsionalitas Tombol Lipat Menu ---
+    const toggleMenuBtn = document.getElementById('toggle-menu-btn');
+    const infoGrid = document.querySelector('.info-grid');
+
+    if (toggleMenuBtn && infoGrid) {
+        toggleMenuBtn.addEventListener('click', () => {
+            infoGrid.classList.toggle('hidden');
+            if (infoGrid.classList.contains('hidden')) {
+                toggleMenuBtn.textContent = 'Tampilkan Menu';
+            } else {
+                toggleMenuBtn.textContent = 'Sembunyikan Menu';
+            }
+        });
+    }
+
     // Jalankan aplikasi
     initializeApp();
 });
