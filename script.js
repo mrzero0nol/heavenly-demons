@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Referensi Elemen DOM ---
     const serverListContainer = document.getElementById('server-list');
-    const searchInput = document.getElementById('search-input');
+    // const searchInput = document.getElementById('search-input'); // Dihapus
     const selectedCountBtn = document.getElementById('selected-count-btn');
     const repingBtn = document.getElementById('reping-btn');
     const ispInfo = document.getElementById('isp-info');
@@ -47,9 +47,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const serverPortInput = document.getElementById('server-port-input');
 
     // Elemen Dropdown Kustom
-    const customDropdown = document.querySelector('.custom-dropdown');
+    const countryDropdown = document.getElementById('country-filter-container').querySelector('.custom-dropdown');
     const selectedCountryEl = document.getElementById('selected-country');
     const countryOptionsContainer = document.getElementById('country-options');
+
+    const providerDropdown = document.getElementById('provider-filter-container').querySelector('.custom-dropdown');
+    const selectedProviderEl = document.getElementById('selected-provider');
+    const providerOptionsContainer = document.getElementById('provider-options');
 
     const bugCdnInput = document.getElementById('bug-cdn-input');
     const workerHostInput = document.getElementById('worker-host-input');
@@ -136,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
             allServers = [...customServers, ...remoteServers];
 
             populateCountryFilter(allServers);
+            populateProviderFilter(allServers); // Panggil fungsi baru
             renderServers(allServers);
 
         } catch (error) {
@@ -184,8 +189,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function selectCountry(value, text) {
         selectedCountryEl.textContent = text;
-        customDropdown.dataset.value = value;
-        customDropdown.classList.remove('active');
+        countryDropdown.dataset.value = value;
+        countryDropdown.classList.remove('active');
 
         // Hapus kelas 'selected' dari semua opsi
         countryOptionsContainer.querySelectorAll('.option').forEach(opt => {
@@ -194,6 +199,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Tambahkan kelas 'selected' ke opsi yang diklik
         const selectedOption = countryOptionsContainer.querySelector(`.option[data-value="${value}"]`);
+        if (selectedOption) {
+            selectedOption.classList.add('selected');
+        }
+
+        applyAllFilters();
+    }
+
+    function populateProviderFilter(servers) {
+        providerOptionsContainer.innerHTML = ''; // Bersihkan opsi lama
+
+        // Tambahkan opsi "Pilih Server VPN" sebagai default
+        const allOption = document.createElement('div');
+        allOption.className = 'option selected';
+        allOption.dataset.value = 'all';
+        allOption.textContent = 'Pilih Server VPN';
+        allOption.addEventListener('click', () => selectProvider('all', 'Pilih Server VPN'));
+        providerOptionsContainer.appendChild(allOption);
+
+        // Filter provider unik, kecuali 'CUSTOM'
+        const providers = [...new Set(servers.map(s => s.provider))].filter(p => p.toLowerCase() !== 'custom').sort();
+        providers.forEach(provider => {
+            const option = document.createElement('div');
+            option.className = 'option';
+            option.dataset.value = provider;
+            option.textContent = provider;
+            option.addEventListener('click', () => selectProvider(provider, provider));
+            providerOptionsContainer.appendChild(option);
+        });
+    }
+
+    function selectProvider(value, text) {
+        selectedProviderEl.textContent = text;
+        providerDropdown.dataset.value = value;
+        providerDropdown.classList.remove('active');
+
+        // Hapus kelas 'selected' dari semua opsi
+        providerOptionsContainer.querySelectorAll('.option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+
+        // Tambahkan kelas 'selected' ke opsi yang diklik
+        const selectedOption = providerOptionsContainer.querySelector(`.option[data-value="${value}"]`);
         if (selectedOption) {
             selectedOption.classList.add('selected');
         }
@@ -506,23 +553,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function applyAllFilters() {
-        const query = searchInput.value.toLowerCase();
-        const selectedCountry = customDropdown.dataset.value || 'all';
+        const selectedProvider = providerDropdown.dataset.value || 'all';
+        const selectedCountry = countryDropdown.dataset.value || 'all';
         
         let serversToDisplay = allServers;
+
         if (isShowingOnlySelected) {
             serversToDisplay = allServers.filter(s => selectedServers.has(s.id));
         }
+
         if (selectedCountry !== 'all') {
             serversToDisplay = serversToDisplay.filter(s => s.country_code === selectedCountry);
         }
-        if (query) {
-            serversToDisplay = serversToDisplay.filter(s => 
-                s.provider.toLowerCase().includes(query) ||
-                s.country_code.toLowerCase().includes(query) ||
-                s.ip.includes(query)
-            );
+
+        if (selectedProvider !== 'all') {
+            serversToDisplay = serversToDisplay.filter(s => s.provider === selectedProvider);
         }
+
         renderServers(serversToDisplay);
     }
 
@@ -621,8 +668,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // EVENT LISTENERS
     // =======================================================
     
-    searchInput.addEventListener('input', applyAllFilters);
-
     selectedCountBtn.addEventListener('click', () => {
         if (selectedServers.size === 0) return;
         isShowingOnlySelected = !isShowingOnlySelected;
@@ -671,14 +716,25 @@ document.addEventListener('DOMContentLoaded', function() {
         pingAllVisibleServers();
     });
 
-    // Event listener untuk dropdown kustom
-    customDropdown.querySelector('.dropdown-selected').addEventListener('click', () => {
-        customDropdown.classList.toggle('active');
+    // Event listener untuk dropdown kustom (Negara)
+    countryDropdown.querySelector('.dropdown-selected').addEventListener('click', () => {
+        countryDropdown.classList.toggle('active');
+        providerDropdown.classList.remove('active'); // Tutup dropdown lain
     });
 
+    // Event listener untuk dropdown kustom (Provider)
+    providerDropdown.querySelector('.dropdown-selected').addEventListener('click', () => {
+        providerDropdown.classList.toggle('active');
+        countryDropdown.classList.remove('active'); // Tutup dropdown lain
+    });
+
+
     document.addEventListener('click', (event) => {
-        if (!customDropdown.contains(event.target)) {
-            customDropdown.classList.remove('active');
+        if (!countryDropdown.contains(event.target)) {
+            countryDropdown.classList.remove('active');
+        }
+        if (!providerDropdown.contains(event.target)) {
+            providerDropdown.classList.remove('active');
         }
     });
 

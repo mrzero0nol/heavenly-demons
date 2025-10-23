@@ -236,30 +236,7 @@ header {
     box-shadow: 0 -2px 15px -5px var(--border-color);
 }
 
-/* Penyesuaian untuk search-box di dalam info-grid */
-.info-card.search-box {
-    padding: 0; /* Hapus padding dari kartu */
-    position: relative; /* Agar ikon bisa diposisikan */
-}
-
-.search-box input {
-    width: 100%;
-    height: 100%;
-    background-color: transparent;
-    border: none; /* Hapus border dari input */
-    padding: 15px; /* Hapus padding ekstra untuk ikon */
-    color: var(--text-light);
-    font-size: 1em;
-    font-family: var(--font-main);
-    transition: all 0.2s ease;
-    text-align: center; /* Tengahkan placeholder */
-}
-
-.search-box input:focus {
-    outline: none;
-    border-color: var(--cyber-cyan);
-    box-shadow: 0 0 10px var(--cyber-cyan);
-}
+/* Dihapus karena .search-box tidak lagi digunakan */
 
 .control-buttons {
     display: grid;
@@ -434,7 +411,7 @@ header {
 }
 
 /* --- Gaya Dropdown Kustom --- */
-#country-filter-container {
+#country-filter-container, #provider-filter-container {
     /* Padding now inherited from .info-card for consistency */
     position: relative;
     padding: 15px; /* Explicitly reset to match .info-card */
@@ -544,7 +521,6 @@ header {
         font-size: 0.75em; /* Memperkecil teks judul lagi */
     }
 
-    .search-box input,
     #ping-worker-url {
         font-size: 0.8em;
         padding: 8px; /* Menghapus padding-left yang tidak perlu */
