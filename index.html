@@ -148,6 +148,31 @@
     </div>
 
     <!-- ======================================================= -->
+    <!-- MODAL EDIT CUSTOM SERVER (BARU)                         -->
+    <!-- ======================================================= -->
+    <div class="modal-overlay" id="edit-server-modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn">&times;</button>
+            <h2>Edit Custom Server</h2>
+            <p>Perbarui detail server kustom Anda.</p>
+            <input type="hidden" id="edit-server-id-input">
+            <div class="form-group">
+                <label for="edit-server-name-input">Nama Server</label>
+                <input type="text" id="edit-server-name-input" placeholder="misal: Server SG">
+            </div>
+            <div class="form-group">
+                <label for="edit-server-ip-input">IP Server</label>
+                <input type="text" id="edit-server-ip-input" placeholder="123.45.67.89">
+            </div>
+            <div class="form-group">
+                <label for="edit-server-port-input">Port</label>
+                <input type="text" id="edit-server-port-input" placeholder="80">
+            </div>
+            <button class="btn primary" id="save-server-changes-btn">Simpan Perubahan</button>
+        </div>
+    </div>
+
+    <!-- ======================================================= -->
     <!-- MODAL CUSTOM SERVER                                     -->
     <!-- ======================================================= -->
     <div class="modal-overlay" id="custom-server-modal-overlay">
