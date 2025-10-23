@@ -47,6 +47,21 @@
                     </div>
                 </div>
 
+                <!-- Tombol Fitur Baru -->
+                <div class="info-card" id="custom-server-btn" style="grid-area: custom;">
+                    <span class="icon">🖥️</span>
+                    <div>
+                        <h4>Custom Server</h4>
+                    </div>
+                </div>
+
+                <div class="info-card" id="test-wildcard-btn" style="grid-area: wildcard;">
+                    <span class="icon">🔍</span>
+                    <div>
+                        <h4>Test Wildcard</h4>
+                    </div>
+                </div>
+
                 <!-- Baris 2: Info & URL Kustom -->
                 <div class="info-card" id="worker-input-card" style="grid-area: worker;">
 
@@ -87,6 +102,7 @@
     <!-- ======================================================= -->
     <div class="modal-overlay" id="settings-modal-overlay">
         <div class="modal-content">
+            <button class="close-btn" data-modal-id="settings-modal-overlay">&times;</button>
             <h2>Settings</h2>
             <p>Atur parameter untuk generate konfigurasi.</p>
             
@@ -118,6 +134,49 @@
             </div>
 
             <button class="btn primary" id="settings-done-btn">Done</button>
+        </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- MODAL CUSTOM SERVER                                     -->
+    <!-- ======================================================= -->
+    <div class="modal-overlay" id="custom-server-modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" data-modal-id="custom-server-modal-overlay">&times;</button>
+            <h2>Custom Server</h2>
+            <p>Tambahkan server Anda sendiri.</p>
+            <div class="form-group">
+                <label for="server-name-input">Nama Server</label>
+                <input type="text" id="server-name-input" placeholder="misal: Server SG">
+            </div>
+            <div class="form-group">
+                <label for="server-ip-input">IP Server</label>
+                <input type="text" id="server-ip-input" placeholder="123.45.67.89">
+            </div>
+            <div class="form-group">
+                <label for="server-port-input">Port</label>
+                <input type="text" id="server-port-input" placeholder="80">
+            </div>
+            <button class="btn primary" id="add-server-btn">Tambahkan</button>
+        </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- MODAL TEST WILDCARD                                     -->
+    <!-- ======================================================= -->
+    <div class="modal-overlay" id="test-wildcard-modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" data-modal-id="test-wildcard-modal-overlay">&times;</button>
+            <h2>Test Wildcard Domain</h2>
+            <p>Masukkan domain untuk menguji konektivitas.</p>
+            <div class="form-group">
+                <label for="wildcard-domain-input">Domain</label>
+                <input type="text" id="wildcard-domain-input" placeholder="contoh: ava.game.naver.com">
+            </div>
+            <button class="btn primary" id="run-wildcard-test-btn">Test</button>
+            <div id="wildcard-test-result" class="test-result">
+                <!-- Hasil tes akan muncul di sini -->
+            </div>
         </div>
     </div>
     

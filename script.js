@@ -18,8 +18,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const locationInfo = document.getElementById('location-info');
     const settingsBtn = document.getElementById('settings-btn');
     const exportBtn = document.getElementById('export-btn');
-    const modalOverlay = document.getElementById('settings-modal-overlay');
+
+    // Referensi Modal
+    const settingsModalOverlay = document.getElementById('settings-modal-overlay');
+    const customServerModalOverlay = document.getElementById('custom-server-modal-overlay');
+    const testWildcardModalOverlay = document.getElementById('test-wildcard-modal-overlay');
+
+    // Tombol Aksi Modal
     const settingsDoneBtn = document.getElementById('settings-done-btn');
+    const addServerBtn = document.getElementById('add-server-btn');
+    const runWildcardTestBtn = document.getElementById('run-wildcard-test-btn');
+
+    // Tombol Pembuka Modal
+    const customServerBtn = document.getElementById('custom-server-btn');
+    const testWildcardBtn = document.getElementById('test-wildcard-btn');
+
+    // Input & Result Wildcard
+    const wildcardDomainInput = document.getElementById('wildcard-domain-input');
+    const wildcardTestResult = document.getElementById('wildcard-test-result');
+
+    // Input Custom Server
+    const serverNameInput = document.getElementById('server-name-input');
+    const serverIpInput = document.getElementById('server-ip-input');
+    const serverPortInput = document.getElementById('server-port-input');
 
     // Elemen Dropdown Kustom
     const customDropdown = document.querySelector('.custom-dropdown');
@@ -108,21 +129,46 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function initializeApp() {
-        setupPingWorkerUrl();
-        detectUserInfo();
-        populateSettingsFromUrl();
+        const loader = document.createElement('div');
+        loader.id = 'loader';
+        loader.textContent = 'Memuat...';
+        document.body.appendChild(loader);
+
         try {
-            serverListContainer.innerHTML = '<p>Mengunduh daftar server...</p>';
-            const response = await fetch(PROXY_LIST_URL);
-            if (!response.ok) throw new Error(`Gagal mengunduh daftar: ${response.statusText}`);
-            
-            const textData = await response.text();
-            allServers = parseProxyList(textData);
+            setupPingWorkerUrl();
+            detectUserInfo();
+            populateSettingsFromUrl();
+
+            // Muat server kustom terlebih dahulu
+            const customServers = JSON.parse(localStorage.getItem('customServers')) || [];
+
+            // Kemudian, coba unduh daftar server remote
+            let remoteServers = [];
+            try {
+                serverListContainer.innerHTML = '<p>Mengunduh daftar server...</p>';
+                const response = await fetch(PROXY_LIST_URL);
+                if (response.ok) {
+                    const textData = await response.text();
+                    remoteServers = parseProxyList(textData);
+                } else {
+                    console.warn(`Gagal mengunduh daftar: ${response.statusText}`);
+                }
+            } catch (fetchError) {
+                console.error("Gagal mengunduh daftar server:", fetchError);
+                // Jangan hentikan aplikasi jika fetch gagal
+            }
+
+            // Gabungkan daftar: server kustom selalu di atas dan tidak terpengaruh oleh kegagalan fetch
+            allServers = [...customServers, ...remoteServers];
+
             populateCountryFilter(allServers);
             renderServers(allServers);
+
         } catch (error) {
             console.error("Initialization Error:", error);
-            serverListContainer.innerHTML = `<p style="color: var(--danger-color);">Gagal memuat data server. <br><small>${error.message}</small></p>`;
+            serverListContainer.innerHTML = `<p style="color: var(--danger-color);">Terjadi kesalahan saat inisialisasi. <br><small>${error.message}</small></p>`;
+        } finally {
+            loader.remove(); // Selalu hapus loader
         }
     }
 
@@ -188,7 +234,24 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const groupedByProvider = serversToRender.reduce((acc, server) => {
+        const customServers = serversToRender.filter(s => s.country_code === 'CUSTOM');
+        const regularServers = serversToRender.filter(s => s.country_code !== 'CUSTOM');
+
+        // Render Custom Servers terlebih dahulu jika ada
+        if (customServers.length > 0) {
+            const groupTitle = document.createElement('h3');
+            groupTitle.className = 'server-group-title';
+            groupTitle.textContent = 'Custom Servers';
+            serverListContainer.appendChild(groupTitle);
+
+            customServers.forEach(server => {
+                const card = createServerCard(server);
+                serverListContainer.appendChild(card);
+            });
+        }
+
+        // Kemudian render server reguler
+        const groupedByProvider = regularServers.reduce((acc, server) => {
             (acc[server.provider] = acc[server.provider] || []).push(server);
             return acc;
         }, {});
@@ -200,28 +263,33 @@ document.addEventListener('DOMContentLoaded', function() {
             serverListContainer.appendChild(groupTitle);
             
             groupedByProvider[provider].forEach(server => {
-                const card = document.createElement('div');
-                card.className = 'server-card';
-                card.dataset.serverId = server.id;
-                if (selectedServers.has(server.id)) {
-                    card.classList.add('selected');
-                }
-
-                card.innerHTML = `
-                    <div class="server-details">
-                        <p class="provider">
-                            <span class="country-code">${server.country_code}</span>
-                            ${server.provider}
-                        </p>
-                        <p class="address">${server.ip}:${server.port}</p>
-                    </div>
-                    <span class="ping-badge">...</span>
-                `;
-                card.addEventListener('click', () => toggleServerSelection(card, server.id));
+                const card = createServerCard(server);
                 serverListContainer.appendChild(card);
             });
         }
         // pingAllVisibleServers(); // Dihapus untuk mencegah ping otomatis
+    }
+
+    function createServerCard(server) {
+        const card = document.createElement('div');
+        card.className = 'server-card';
+        card.dataset.serverId = server.id;
+        if (selectedServers.has(server.id)) {
+            card.classList.add('selected');
+        }
+
+        card.innerHTML = `
+            <div class="server-details">
+                <p class="provider">
+                    <span class="country-code">${server.country_code}</span>
+                    ${server.provider}
+                </p>
+                <p class="address">${server.ip}:${server.port}</p>
+            </div>
+            <span class="ping-badge">...</span>
+        `;
+        card.addEventListener('click', () => toggleServerSelection(card, server.id));
+        return card;
     }
 
     async function detectUserInfo() {
@@ -248,6 +316,110 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!uuidInput.value) {
             uuidInput.value = generateUUIDv4();
+        }
+    }
+
+    // =======================================================
+    // FUNGSI CUSTOM SERVER
+    // =======================================================
+
+    function loadCustomServers() {
+        // Fungsi ini sekarang hanya mengembalikan daftar dari localStorage.
+        // Logika penggabungan ada di initializeApp.
+        return JSON.parse(localStorage.getItem('customServers')) || [];
+    }
+
+    function handleAddCustomServer() {
+        const name = serverNameInput.value.trim();
+        const ip = serverIpInput.value.trim();
+        const port = serverPortInput.value.trim();
+
+        if (!name || !ip || !port) {
+            showToast("Harap isi semua kolom untuk custom server.", true);
+            return;
+        }
+
+        // Validasi IP (lebih baik, tapi masih sederhana)
+        const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        if (!ipRegex.test(ip)) {
+            showToast("Format IP address tidak valid.", true);
+            return;
+        }
+
+        // Validasi Port
+        if (isNaN(port) || port < 1 || port > 65535) {
+            showToast("Port harus berupa angka antara 1 dan 65535.", true);
+            return;
+        }
+
+        const newServer = {
+            id: `${ip}:${port}`,
+            ip: ip,
+            port: port,
+            country_code: 'CUSTOM',
+            provider: name // Menggunakan nama sebagai provider
+        };
+
+        let customServers = loadCustomServers();
+
+        // Cek duplikat di seluruh daftar server (baik kustom maupun remote)
+        if (allServers.some(s => s.id === newServer.id)) {
+            showToast("Server dengan IP dan Port ini sudah ada.", true);
+            return;
+        }
+
+        // Tambahkan ke daftar kustom dan simpan
+        customServers.push(newServer);
+        localStorage.setItem('customServers', JSON.stringify(customServers));
+
+        // Tambahkan ke daftar 'allServers' yang aktif di memori (di bagian depan)
+        allServers.unshift(newServer);
+
+        applyAllFilters(); // Render ulang daftar
+        closeCustomServerModal();
+        showToast("Custom server berhasil ditambahkan!");
+
+        // Kosongkan input
+        serverNameInput.value = '';
+        serverIpInput.value = '';
+        serverPortInput.value = '';
+    }
+
+    // =======================================================
+    // FUNGSI TEST WILDCARD
+    // =======================================================
+
+    async function handleWildcardTest() {
+        let domain = wildcardDomainInput.value.trim();
+        if (!domain) {
+            wildcardTestResult.textContent = 'Error: Domain tidak boleh kosong.';
+            wildcardTestResult.style.color = 'var(--danger-color)';
+            return;
+        }
+
+        // Tambahkan https:// jika tidak ada protokol
+        if (!domain.startsWith('http://') && !domain.startsWith('https://')) {
+            domain = 'https://' + domain;
+        }
+
+        wildcardTestResult.textContent = `Menguji ${domain}...`;
+        wildcardTestResult.style.color = 'var(--text-light)';
+        const startTime = Date.now();
+
+        try {
+            // Menggunakan mode 'no-cors' untuk menghindari error CORS,
+            // karena kita hanya peduli jika domain dapat dijangkau, bukan membaca responsnya.
+            const response = await fetch(domain, { method: 'HEAD', mode: 'no-cors', signal: AbortSignal.timeout(5000) });
+            const duration = Date.now() - startTime;
+
+            // Dalam mode no-cors, status akan 0, jadi kita anggap berhasil jika tidak ada error.
+            wildcardTestResult.textContent = `SUKSES!\nDomain merespons dalam ${duration} md.`;
+            wildcardTestResult.style.color = 'var(--cyber-cyan)';
+
+        } catch (error) {
+            console.error("Wildcard Test Error:", error);
+            wildcardTestResult.textContent = `GAGAL!\nError: ${error.name === 'AbortError' ? 'Timeout' : 'Tidak dapat dijangkau'}. Periksa konsol untuk detail.`;
+            wildcardTestResult.style.color = 'var(--danger-color)';
         }
     }
 
@@ -421,8 +593,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function openSettingsModal() { modalOverlay.classList.add('visible'); }
-    function closeSettingsModal() { modalOverlay.classList.remove('visible'); }
+    function openSettingsModal() { settingsModalOverlay.classList.add('visible'); }
+    function closeSettingsModal() { settingsModalOverlay.classList.remove('visible'); }
+    function openCustomServerModal() { customServerModalOverlay.classList.add('visible'); }
+    function closeCustomServerModal() { customServerModalOverlay.classList.remove('visible'); }
+    function openTestWildcardModal() { testWildcardModalOverlay.classList.add('visible'); }
+
+    // Fungsi Generik untuk menutup modal
+    function closeModal(modalElement) {
+        modalElement.classList.remove('visible');
+    }
 
     // =======================================================
     // EVENT LISTENERS
@@ -443,12 +623,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // --- Event Listener untuk Modal ---
     settingsBtn.addEventListener('click', openSettingsModal);
-    settingsDoneBtn.addEventListener('click', closeSettingsModal);
-    modalOverlay.addEventListener('click', (event) => {
-        if (event.target === modalOverlay) closeSettingsModal();
+    customServerBtn.addEventListener('click', openCustomServerModal);
+    testWildcardBtn.addEventListener('click', openTestWildcardModal);
+
+    // Menangani penutupan semua modal
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal(modal);
+            }
+        });
+    });
+
+    document.querySelectorAll('.close-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const modal = btn.closest('.modal-overlay');
+            if (modal) {
+                closeModal(modal);
+            }
+        });
     });
     
+    settingsDoneBtn.addEventListener('click', closeSettingsModal);
+    addServerBtn.addEventListener('click', handleAddCustomServer);
+    runWildcardTestBtn.addEventListener('click', handleWildcardTest);
+
     exportBtn.addEventListener('click', exportProxies);
     repingBtn.addEventListener('click', () => {
         showToast("Memulai ulang tes ping...");
