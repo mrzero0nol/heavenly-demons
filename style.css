@@ -58,7 +58,7 @@ header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 10px; /* Tambah jarak */
 }
 
 .telegram-link {
@@ -560,15 +560,15 @@ header {
 }
 
 /* --- Kontrol Menu & Pemisah --- */
-.menu-controls {
-    display: flex;
-    justify-content: center;
-    margin: 15px 0;
-}
+/* .menu-controls dihapus karena tombol sekarang di header */
 
-#toggle-menu-btn {
-    width: 100%;
-    max-width: 300px; /* Batasi lebar tombol */
+header #toggle-menu-btn {
+    padding: 8px 15px;
+    font-size: 0.8em;
+    width: auto; /* Lebar otomatis */
+    border-color: var(--primary-demonic);
+    color: var(--primary-demonic);
+    background: transparent;
 }
 
 .info-grid {
