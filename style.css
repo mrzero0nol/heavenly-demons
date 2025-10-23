@@ -242,10 +242,12 @@ header {
 .ping-badge.medium {
     background-color: #fdd835; /* Kuning */
     color: var(--text-dark);
+    box-shadow: 0 0 8px #fdd835;
 }
 
 .ping-badge.bad {
     background-color: var(--primary-demonic);
+    box-shadow: 0 0 8px var(--primary-demonic);
 }
 
 /* --- Footer & Kontrol --- */
