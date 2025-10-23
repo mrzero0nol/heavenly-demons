@@ -91,17 +91,18 @@ header {
 /* --- Kartu Informasi Atas --- */
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     grid-template-areas:
-        "search country settings"
-        "worker provider location";
-    gap: 15px;
+        "provider location"
+        "country settings"
+        "search worker";
+    gap: 10px;
     margin: 20px 0;
 }
 .info-card {
     background-color: var(--surface-light);
     border: 1px solid #333;
-    padding: 15px;
+    padding: 12px;
     display: flex;
     flex-direction: column; /* Menumpuk ikon dan teks secara vertikal */
     align-items: center; /* Menengahkan secara horizontal */
@@ -126,11 +127,11 @@ header {
 }
 
 .info-card p {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #aaa;
 }
 .info-card h4 {
-    font-size: 1.1em;
+    font-size: 1em;
     font-family: var(--font-main);
     font-weight: 600;
     color: var(--cyber-cyan);
