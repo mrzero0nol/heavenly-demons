@@ -45,26 +45,45 @@ document.addEventListener('DOMContentLoaded', function() {
     function setupPingWorkerUrl() {
         // Selalu gunakan URL default sebagai dasar, tetapi biarkan input bisa kosong
         activePingTesterUrl = DEFAULT_PING_TESTER_URL;
-        const savedUrl = localStorage.getItem('pingTesterUrl');
+        let savedUrl = localStorage.getItem('pingTesterUrl');
 
         if (savedUrl) {
+            // PERBAIKAN: Pastikan URL yang tersimpan menggunakan HTTPS
+            savedUrl = savedUrl.trim();
+            if (!savedUrl.startsWith('http://') && !savedUrl.startsWith('https://')) {
+                savedUrl = 'https://' + savedUrl;
+            }
+            if (savedUrl.startsWith('http://')) {
+                savedUrl = savedUrl.replace('http://', 'https://');
+            }
             pingWorkerUrlInput.value = savedUrl;
             activePingTesterUrl = savedUrl;
         }
         // Jangan set nilai default ke input field, biarkan placeholder yang bekerja
 
         pingWorkerUrlInput.addEventListener('change', () => {
-            const newUrl = pingWorkerUrlInput.value.trim();
+            let newUrl = pingWorkerUrlInput.value.trim();
             if (newUrl) {
+                // PERBAIKAN: Pastikan URL selalu HTTPS untuk menghindari redirect yang mengubah POST menjadi GET.
+                if (!newUrl.startsWith('http://') && !newUrl.startsWith('https://')) {
+                    newUrl = 'https://' + newUrl;
+                }
+                if (newUrl.startsWith('http://')) {
+                    newUrl = newUrl.replace('http://', 'https://');
+                }
+
                 activePingTesterUrl = newUrl;
+                pingWorkerUrlInput.value = newUrl; // Tampilkan URL yang sudah dikoreksi kepada pengguna
                 localStorage.setItem('pingTesterUrl', newUrl);
                 showToast('URL Worker Ping diperbarui.');
                 pingAllVisibleServers();
             } else {
+                // Jika pengguna mengosongkan input, kembali ke default
                 activePingTesterUrl = DEFAULT_PING_TESTER_URL;
                 localStorage.removeItem('pingTesterUrl');
-                pingWorkerUrlInput.value = DEFAULT_PING_TESTER_URL;
+                pingWorkerUrlInput.value = ''; // Kosongkan input untuk menampilkan placeholder
                 showToast('URL Worker Ping dikembalikan ke default.');
+                pingAllVisibleServers(); // Ping ulang dengan URL default
             }
         });
     }
@@ -274,35 +293,51 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function pingAllVisibleServers() {
-        const serverCards = serverListContainer.querySelectorAll('.server-card');
+        const CONCURRENCY_LIMIT = 15; // Batasi hingga 15 ping bersamaan
+        const serverCards = Array.from(serverListContainer.querySelectorAll('.server-card'));
         
-        const pingPromises = Array.from(serverCards).map(async (card) => {
+        // Buat pool promise
+        const pingTasks = [];
+
+        for (const card of serverCards) {
             const serverId = card.dataset.serverId;
-            if (!serverId) return;
+            if (!serverId) continue;
+
             const [ip, port] = serverId.split(':');
             const pingBadge = card.querySelector('.ping-badge');
-            
-            if (pingBadge) {
-                pingBadge.textContent = '...';
-                pingBadge.style.backgroundColor = '';
 
-                const pingValue = await pingServer(ip, port);
-                
+            if (pingBadge) {
+                // Atur ulang badge sebelum memulai ping
                 requestAnimationFrame(() => {
-                    if (pingValue === -1) {
-                        pingBadge.textContent = 'N/A';
-                        pingBadge.style.backgroundColor = '#555';
-                    } else {
-                        pingBadge.textContent = `${pingValue} ms`;
-                        if (pingValue < 250) pingBadge.style.backgroundColor = 'var(--cyber-cyan)';
-                        else if (pingValue < 1000) pingBadge.style.backgroundColor = '#fdd835';
-                        else pingBadge.style.backgroundColor = 'var(--primary-demonic)';
-                    }
+                    pingBadge.textContent = '...';
+                    pingBadge.style.backgroundColor = '';
+                });
+
+                // Tambahkan tugas ping ke pool
+                pingTasks.push(async () => {
+                    const pingValue = await pingServer(ip, port);
+
+                    // Update UI setelah selesai
+                    requestAnimationFrame(() => {
+                        if (pingValue === -1) {
+                            pingBadge.textContent = 'N/A';
+                            pingBadge.style.backgroundColor = '#555';
+                        } else {
+                            pingBadge.textContent = `${pingValue} ms`;
+                            if (pingValue < 250) pingBadge.style.backgroundColor = 'var(--cyber-cyan)';
+                            else if (pingValue < 1000) pingBadge.style.backgroundColor = '#fdd835';
+                            else pingBadge.style.backgroundColor = 'var(--primary-demonic)';
+                        }
+                    });
                 });
             }
-        });
+        }
 
-        await Promise.all(pingPromises);
+        // Jalankan tugas dengan konkurensi terbatas
+        for (let i = 0; i < pingTasks.length; i += CONCURRENCY_LIMIT) {
+            const batch = pingTasks.slice(i, i + CONCURRENCY_LIMIT).map(task => task());
+            await Promise.all(batch);
+        }
     }
 
     // =======================================================
