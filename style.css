@@ -52,25 +52,10 @@ header {
 
 .title-container {
     display: flex;
-    justify-content: space-between; /* Mengembalikan ke space-between */
+    justify-content: center; /* Menengahkan judul */
     align-items: center;
+    position: relative; /* Konteks untuk tombol absolut */
 }
-
-.telegram-link {
-    color: var(--primary-demonic);
-    text-decoration: none;
-    font-size: 0.9em;
-    font-weight: 600;
-    letter-spacing: 1px;
-    transition: all 0.2s ease;
-    text-shadow: 0 0 5px var(--primary-demonic);
-}
-
-.telegram-link:hover {
-    color: var(--cyber-cyan);
-    text-shadow: 0 0 8px var(--cyber-cyan);
-}
-
 
 /* --- Header & Logo --- */
 .logo {
@@ -82,10 +67,11 @@ header {
 }
 .logo h1 {
     font-family: var(--font-titles);
-    font-size: 1.8em;
+    font-size: 1.5em; /* Disesuaikan untuk teks yang lebih panjang */
     font-weight: 700;
     color: var(--cyber-cyan);
     text-shadow: 0 0 5px var(--cyber-cyan), 0 0 10px var(--cyber-cyan);
+    text-align: center;
 }
 
 /* --- Kartu Informasi Atas --- */
@@ -561,9 +547,14 @@ header {
     color: var(--cyber-cyan);
     font-size: 2rem;
     cursor: pointer;
-    padding: 0 0.5rem;
     line-height: 1;
     transition: color 0.3s ease, text-shadow 0.3s ease;
+
+    /* Memposisikan tombol di kanan */
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .btn-icon:hover {
@@ -597,25 +588,13 @@ header {
 /* --- Responsif untuk Seluler --- */
 @media (max-width: 768px) {
     /* Perbaikan Header untuk Mobile */
-    .title-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px; /* Memberi sedikit jarak antar elemen */
-    }
-
     .logo h1 {
-        font-size: 1.2em; /* Ukuran judul diperkecil secara signifikan */
-    }
-
-    .telegram-link {
-        font-size: 0.7em; /* Ukuran link telegram diperkecil */
-        text-align: center; /* Jaga-jaga jika teksnya wrap */
+        font-size: 1.1em; /* Disesuaikan lagi untuk teks yang lebih panjang */
     }
 
     .btn-icon {
         font-size: 1.8rem; /* Ukuran tombol menu diperkecil */
-        padding: 0; /* Hapus padding agar lebih rapat */
+        right: -10px; /* Disesuaikan agar tidak terlalu menempel di tepi */
     }
 
     .server-list-grid {
