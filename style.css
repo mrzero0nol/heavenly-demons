@@ -574,6 +574,10 @@ header {
         gap: 10px; /* Tetapkan jarak antar kartu */
     }
 
+    .server-group-title {
+        flex-basis: 100%; /* Pastikan judul mengambil lebar penuh */
+    }
+
     /* Penyesuaian ukuran kartu server untuk seluler */
     .server-card {
         padding: 8px; /* Kembalikan padding ke nilai yang lebih nyaman */
