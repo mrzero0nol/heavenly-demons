@@ -569,8 +569,9 @@ header {
 /* --- Responsif untuk Seluler --- */
 @media (max-width: 768px) {
     .server-list-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 kolom di layar kecil */
-        gap: 10px; /* Kembalikan jarak antar kartu ke nilai yang lebih nyaman */
+        display: flex; /* Menggunakan Flexbox */
+        flex-wrap: wrap; /* Izinkan item untuk wrap ke baris berikutnya */
+        gap: 10px; /* Tetapkan jarak antar kartu */
     }
 
     /* Penyesuaian ukuran kartu server untuk seluler */
@@ -579,6 +580,7 @@ header {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        flex: 1 1 calc(50% - 5px); /* Basis 50% untuk 2 kolom, dikurangi setengah gap */
     }
 
     .country-code {
