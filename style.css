@@ -261,6 +261,7 @@ header {
     font-size: 0.8em; /* Diperkecil */
     color: #aaa;
     margin-bottom: 8px; /* Beri jarak ke ping badge */
+    word-break: break-all; /* Memastikan teks panjang tidak meluap */
 }
 .ping-badge {
     background-color: #333;
@@ -295,17 +296,20 @@ header {
 .controls-footer {
     position: sticky;
     bottom: 0;
+    left: 0;
+    width: 100%;
     background-color: rgba(10, 10, 10, 0.85);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     padding: 15px;
     border-top: 2px solid var(--border-color);
-    margin: 20px -15px -15px -15px;
+    margin: 20px 0 0 0; /* Hapus margin negatif, atur margin atas */
     display: grid;
     grid-template-columns: 1fr; /* Diubah menjadi 1 kolom */
     gap: 15px;
     align-items: center;
     box-shadow: 0 -2px 15px -5px var(--border-color);
+    box-sizing: border-box; /* Pastikan padding termasuk dalam width: 100% */
 }
 
 /* Dihapus karena .search-box tidak lagi digunakan */
