@@ -40,57 +40,21 @@ body {
     padding: 15px;
 }
 
-/* ============================================= */
-/* --- DESAIN ULANG HEADER & MENU (BARU) --- */
-/* ============================================= */
 header {
-    background: var(--surface-light);
-    border-bottom: 2px solid var(--primary-demonic);
-    box-shadow: 0 2px 20px -5px var(--primary-demonic);
-    padding: 15px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    backdrop-filter: blur(5px);
-    background: rgba(26, 26, 26, 0.85); /* Latar belakang semi-transparan */
-
-    /* Flexbox untuk layout header */
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center; /* Mengubah ke tengah */
     align-items: center;
+    text-align: center; /* Memastikan teks di tengah */
+    padding: 15px 0;
+    border-bottom: 2px solid var(--border-color);
+    box-shadow: 0 2px 15px -5px var(--border-color);
 }
 
 .title-container {
-    /* Disederhanakan, hanya untuk membungkus judul jika perlu */
-    /* Properti flexbox tidak lagi diperlukan di sini */
-}
-
-.info-grid {
-    flex-basis: 100%; /* Pastikan menu membentang selebar header */
-    margin-top: 15px; /* Beri jarak dari title-container */
-    border-top: 1px solid var(--cyber-cyan);
-    box-shadow: 0 5px 15px -5px var(--cyber-cyan);
-    padding-top: 15px; /* Padding di dalam, setelah border */
-}
-
-#toggle-menu-btn {
-    background-color: transparent;
-    border: 2px solid var(--cyber-cyan);
-    color: var(--cyber-cyan);
-    font-size: 1.5em;
-    font-weight: bold;
-    padding: 5px 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 8px var(--cyber-cyan);
-    text-shadow: 0 0 5px var(--cyber-cyan);
-}
-
-#toggle-menu-btn:hover {
-    background-color: var(--cyber-cyan);
-    color: var(--text-dark);
-    box-shadow: 0 0 20px var(--cyber-cyan);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
 }
 
 .telegram-link {
@@ -136,18 +100,6 @@ header {
         "custom wildcard";
     gap: 10px;
     margin: 20px 0;
-
-    /* Properti untuk transisi buka/tutup */
-    max-height: 1000px; /* Cukup besar untuk menampung konten */
-    opacity: 1;
-    overflow: hidden;
-    transition: max-height 0.5s ease-out, opacity 0.3s ease-out, margin 0.5s ease-out;
-}
-
-.info-grid.hidden {
-    max-height: 0;
-    opacity: 0;
-    margin: 0; /* Hapus margin agar tidak ada ruang kosong */
 }
 .info-card {
     background-color: var(--surface-light);
@@ -203,10 +155,6 @@ header {
     box-shadow: 0 0 10px var(--cyber-cyan);
 }
 
-main {
-    padding-top: 20px;
-}
-
 /* --- Daftar Server --- */
 .server-list-grid {
     display: grid;
@@ -218,7 +166,7 @@ main {
     text-transform: uppercase;
     font-weight: bold;
     color: var(--primary-demonic);
-    margin: 15px 0 10px 0; /* Mengurangi margin atas */
+    margin: 30px 0 10px 0;
     font-size: 0.9em;
     text-shadow: 0 0 5px var(--primary-demonic);
     grid-column: 1 / -1; /* Judul mencakup semua kolom */
