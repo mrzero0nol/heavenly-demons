@@ -575,12 +575,15 @@ header {
 
     /* Penyesuaian ukuran kartu server untuk seluler */
     .server-card {
-        padding: 4px; /* Perkecil padding internal kartu */
-        /* min-height dihapus agar ukuran kartu menyesuaikan konten */
+        height: 90px; /* Menetapkan tinggi kartu agar sama */
+        padding: 5px; /* Sedikit menambah padding kembali untuk keseimbangan */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .country-code {
-        font-size: 0.6em; /* Diperkecil lagi */
+        font-size: 0.6em;
         padding: 2px 3px;
     }
 
