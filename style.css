@@ -305,7 +305,6 @@ header {
     border-top: 2px solid var(--border-color);
     margin: 20px 0 0 0; /* Hapus margin negatif, atur margin atas */
     display: grid;
-    grid-template-columns: 1fr; /* Diubah menjadi 1 kolom */
     gap: 15px;
     align-items: center;
     box-shadow: 0 -2px 15px -5px var(--border-color);
@@ -571,6 +570,27 @@ header {
 @media (max-width: 768px) {
     .server-list-grid {
         grid-template-columns: repeat(2, 1fr); /* 2 kolom di layar kecil */
+        gap: 8px; /* Perkecil jarak antar kartu */
+    }
+
+    /* Penyesuaian ukuran kartu server untuk seluler */
+    .server-card {
+        padding: 8px; /* Perkecil padding internal kartu */
+        min-height: 75px; /* Sesuaikan tinggi minimum */
+    }
+
+    .server-details .provider {
+        font-size: 0.8em; /* Perkecil font provider */
+    }
+
+    .server-details .address {
+        font-size: 0.75em; /* Perkecil font alamat */
+        margin-bottom: 5px; /* Kurangi margin bawah */
+    }
+
+    .ping-badge {
+        padding: 2px 6px; /* Perkecil padding badge */
+        font-size: 0.75em; /* Perkecil font badge */
     }
 
     .info-grid {
