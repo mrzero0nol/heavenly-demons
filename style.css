@@ -41,21 +41,37 @@ body {
 }
 
 header {
-    padding: 0.5rem 1rem; /* Padding diperkecil */
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 0 10px -5px var(--border-color); /* Efek glow dikurangi */
-    position: sticky;
-    top: 0;
-    background-color: var(--bg-dark);
-    z-index: 1000;
+    display: flex;
+    justify-content: center; /* Mengubah ke tengah */
+    align-items: center;
+    text-align: center; /* Memastikan teks di tengah */
+    padding: 15px 0;
+    border-bottom: 2px solid var(--border-color);
+    box-shadow: 0 2px 15px -5px var(--border-color);
 }
 
 .title-container {
     display: flex;
-    justify-content: center; /* Menengahkan judul */
+    flex-direction: column;
     align-items: center;
-    position: relative; /* Konteks untuk tombol absolut */
+    gap: 5px;
 }
+
+.telegram-link {
+    color: var(--primary-demonic);
+    text-decoration: none;
+    font-size: 0.9em;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    text-shadow: 0 0 5px var(--primary-demonic);
+}
+
+.telegram-link:hover {
+    color: var(--cyber-cyan);
+    text-shadow: 0 0 8px var(--cyber-cyan);
+}
+
 
 /* --- Header & Logo --- */
 .logo {
@@ -67,35 +83,34 @@ header {
 }
 .logo h1 {
     font-family: var(--font-titles);
-    font-size: 1.5em; /* Disesuaikan untuk teks yang lebih panjang */
+    font-size: 1.8em;
     font-weight: 700;
     color: var(--cyber-cyan);
     text-shadow: 0 0 5px var(--cyber-cyan), 0 0 10px var(--cyber-cyan);
-    text-align: center;
 }
 
 /* --- Kartu Informasi Atas --- */
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     grid-template-areas:
-        "provider provider provider location location location"
-        "country country settings settings search search"
-        "worker worker wildcard wildcard custom custom";
-    gap: 8px;
+        "provider location"
+        "country settings"
+        "search worker"
+        "custom wildcard";
+    gap: 10px;
     margin: 20px 0;
 }
 .info-card {
     background-color: var(--surface-light);
     border: 1px solid #333;
-    padding: 8px;
+    padding: 12px;
     display: flex;
     flex-direction: column; /* Menumpuk ikon dan teks secara vertikal */
     align-items: center; /* Menengahkan secara horizontal */
     justify-content: center; /* Menengahkan secara vertikal */
     text-align: center;
     transition: all 0.2s ease;
-    min-height: 70px; /* Menyamakan tinggi */
 }
 
 .info-card > div {
@@ -117,11 +132,11 @@ header {
 }
 
 .info-card p {
-    font-size: 0.75em; /* Diperkecil */
+    font-size: 0.8em;
     color: #aaa;
 }
 .info-card h4 {
-    font-size: 0.9em; /* Diperkecil */
+    font-size: 1em;
     font-family: var(--font-main);
     font-weight: 600;
     color: var(--cyber-cyan);
@@ -140,6 +155,10 @@ header {
     box-shadow: 0 0 10px var(--cyber-cyan);
 }
 
+main {
+    padding-top: 20px;
+}
+
 /* --- Daftar Server --- */
 .server-list-grid {
     display: grid;
@@ -151,7 +170,7 @@ header {
     text-transform: uppercase;
     font-weight: bold;
     color: var(--primary-demonic);
-    margin: 30px 0 10px 0;
+    margin: 15px 0 10px 0; /* Mengurangi margin atas */
     font-size: 0.9em;
     text-shadow: 0 0 5px var(--primary-demonic);
     grid-column: 1 / -1; /* Judul mencakup semua kolom */
@@ -228,7 +247,6 @@ header {
     gap: 5px; /* Diperkecil */
     font-size: 0.9em; /* Sedikit diperkecil */
     flex-wrap: wrap; /* Izinkan wrap jika nama provider panjang */
-    word-break: break-all;
 }
 
 .country-code {
@@ -247,7 +265,6 @@ header {
     font-size: 0.8em; /* Diperkecil */
     color: #aaa;
     margin-bottom: 8px; /* Beri jarak ke ping badge */
-    word-break: break-all;
 }
 .ping-badge {
     background-color: #333;
@@ -282,19 +299,17 @@ header {
 .controls-footer {
     position: sticky;
     bottom: 0;
-    left: 0;
-    width: 100%;
     background-color: rgba(10, 10, 10, 0.85);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     padding: 15px;
     border-top: 2px solid var(--border-color);
+    margin: 20px -15px -15px -15px;
     display: grid;
     grid-template-columns: 1fr; /* Diubah menjadi 1 kolom */
     gap: 15px;
     align-items: center;
     box-shadow: 0 -2px 15px -5px var(--border-color);
-    z-index: 100;
 }
 
 /* Dihapus karena .search-box tidak lagi digunakan */
@@ -540,39 +555,6 @@ header {
     text-shadow: 0 0 5px var(--text-light);
 }
 
-/* --- Kontrol Menu & Tombol Ikon --- */
-.btn-icon {
-    background: none;
-    border: none;
-    color: var(--cyber-cyan);
-    font-size: 2rem;
-    cursor: pointer;
-    line-height: 1;
-    transition: color 0.3s ease, text-shadow 0.3s ease;
-
-    /* Memposisikan tombol di kanan */
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.btn-icon:hover {
-    color: #ffffff;
-    text-shadow: 0 0 5px var(--cyber-cyan);
-}
-
-.info-grid {
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-}
-
-.info-grid.hidden {
-    display: none;
-}
-
-
 /* Scrollbar styling */
 .dropdown-options::-webkit-scrollbar {
     width: 8px;
@@ -587,20 +569,19 @@ header {
 
 /* --- Responsif untuk Seluler --- */
 @media (max-width: 768px) {
-    /* Perbaikan Header untuk Mobile */
-    .logo h1 {
-        font-size: 1.1em; /* Disesuaikan lagi untuk teks yang lebih panjang */
-    }
-
-    .btn-icon {
-        font-size: 1.8rem; /* Ukuran tombol menu diperkecil */
-        right: -10px; /* Disesuaikan agar tidak terlalu menempel di tepi */
-    }
-
     .server-list-grid {
         grid-template-columns: repeat(2, 1fr); /* 2 kolom di layar kecil */
     }
 
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 kolom untuk seluler */
+        grid-template-areas:
+            "provider location"
+            "country settings"
+            "search worker"
+            "custom wildcard"; /* Menambahkan tombol baru */
+        gap: 8px;
+    }
 
     .info-card {
         padding: 8px 4px; /* Atas/bawah 8px, Kiri/kanan 4px */
