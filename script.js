@@ -879,13 +879,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (toggleMenuBtn && infoGrid) {
         toggleMenuBtn.addEventListener('click', () => {
-            infoGrid.classList.toggle('hidden');
-            if (infoGrid.classList.contains('hidden')) {
-                toggleMenuBtn.textContent = 'Tampilkan Menu';
+            const isHidden = infoGrid.classList.toggle('hidden');
+
+            if (isHidden) {
+                // Menu sekarang tersembunyi
+                toggleMenuBtn.textContent = '☰'; // Ikon menu
+                toggleMenuBtn.title = 'Tampilkan Menu';
             } else {
-                toggleMenuBtn.textContent = 'Sembunyikan Menu';
+                // Menu sekarang ditampilkan
+                toggleMenuBtn.textContent = '✕'; // Ikon tutup (X)
+                toggleMenuBtn.title = 'Sembunyikan Menu';
+
+                // Gulir ke atas jika pengguna berada di bawah
+                if (window.scrollY > 0) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             }
         });
+
+        // Setel ikon awal berdasarkan keadaan awal
+        if (infoGrid.classList.contains('hidden')) {
+            toggleMenuBtn.textContent = '☰';
+            toggleMenuBtn.title = 'Tampilkan Menu';
+        } else {
+            toggleMenuBtn.textContent = '✕';
+            toggleMenuBtn.title = 'Sembunyikan Menu';
+        }
     }
 
     // Jalankan aplikasi

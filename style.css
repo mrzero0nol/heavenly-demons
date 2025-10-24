@@ -41,13 +41,9 @@ body {
 }
 
 header {
-    display: flex;
-    justify-content: center; /* Mengubah ke tengah */
-    align-items: center;
-    text-align: center; /* Memastikan teks di tengah */
-    padding: 15px 0;
-    border-bottom: 2px solid var(--border-color);
-    box-shadow: 0 2px 15px -5px var(--border-color);
+    padding: 0.5rem 1rem; /* Padding diperkecil */
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 0 10px -5px var(--border-color); /* Efek glow dikurangi */
     position: sticky;
     top: 0;
     background-color: var(--bg-dark);
@@ -56,9 +52,8 @@ header {
 
 .title-container {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between; /* Mengembalikan ke space-between */
     align-items: center;
-    gap: 10px; /* Tambah jarak */
 }
 
 .telegram-link {
@@ -559,16 +554,21 @@ header {
     text-shadow: 0 0 5px var(--text-light);
 }
 
-/* --- Kontrol Menu & Pemisah --- */
-/* .menu-controls dihapus karena tombol sekarang di header */
+/* --- Kontrol Menu & Tombol Ikon --- */
+.btn-icon {
+    background: none;
+    border: none;
+    color: var(--cyber-cyan);
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0 0.5rem;
+    line-height: 1;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
 
-header #toggle-menu-btn {
-    padding: 8px 15px;
-    font-size: 0.8em;
-    width: auto; /* Lebar otomatis */
-    border-color: var(--primary-demonic);
-    color: var(--primary-demonic);
-    background: transparent;
+.btn-icon:hover {
+    color: #ffffff;
+    text-shadow: 0 0 5px var(--cyber-cyan);
 }
 
 .info-grid {
