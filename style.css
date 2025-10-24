@@ -569,28 +569,34 @@ header {
 /* --- Responsif untuk Seluler --- */
 @media (max-width: 768px) {
     .server-list-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 kolom di layar kecil */
-        gap: 8px; /* Perkecil jarak antar kartu */
+        grid-template-columns: repeat(3, 1fr); /* 3 kolom di layar kecil */
+        gap: 5px; /* Perkecil jarak antar kartu */
     }
 
     /* Penyesuaian ukuran kartu server untuk seluler */
     .server-card {
-        padding: 8px; /* Perkecil padding internal kartu */
+        padding: 5px; /* Perkecil padding internal kartu */
         min-height: 75px; /* Sesuaikan tinggi minimum */
     }
 
+    .country-code {
+        font-size: 0.65em;
+        padding: 2px 4px;
+    }
+
     .server-details .provider {
-        font-size: 0.8em; /* Perkecil font provider */
+        font-size: 0.7em; /* Perkecil font provider */
+        gap: 4px;
     }
 
     .server-details .address {
-        font-size: 0.75em; /* Perkecil font alamat */
+        font-size: 0.7em; /* Perkecil font alamat */
         margin-bottom: 5px; /* Kurangi margin bawah */
     }
 
     .ping-badge {
-        padding: 2px 6px; /* Perkecil padding badge */
-        font-size: 0.75em; /* Perkecil font badge */
+        padding: 2px 4px; /* Perkecil padding badge */
+        font-size: 0.7em; /* Perkecil font badge */
     }
 
     .info-grid {
