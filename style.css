@@ -596,6 +596,28 @@ header {
 
 /* --- Responsif untuk Seluler --- */
 @media (max-width: 768px) {
+    /* Perbaikan Header untuk Mobile */
+    .title-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px; /* Memberi sedikit jarak antar elemen */
+    }
+
+    .logo h1 {
+        font-size: 1.2em; /* Ukuran judul diperkecil secara signifikan */
+    }
+
+    .telegram-link {
+        font-size: 0.7em; /* Ukuran link telegram diperkecil */
+        text-align: center; /* Jaga-jaga jika teksnya wrap */
+    }
+
+    .btn-icon {
+        font-size: 1.8rem; /* Ukuran tombol menu diperkecil */
+        padding: 0; /* Hapus padding agar lebih rapat */
+    }
+
     .server-list-grid {
         grid-template-columns: repeat(2, 1fr); /* 2 kolom di layar kecil */
     }
