@@ -690,7 +690,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const bugCdn = bugCdnInput.value.trim();
         const workerHost = workerHostInput.value.trim();
-        const uuid = uuidInput.value.trim();
+        const uuid = uuidInput.value.trim(); // Digunakan sebagai UUID untuk VLESS dan Password untuk Trojan
+        const selectedProtocol = protocolSelect.value;
+
         if (!bugCdn || !workerHost || !uuid) {
             showToast("Harap isi semua kolom di Settings.", true);
             openSettingsModal();
@@ -706,30 +708,44 @@ document.addEventListener('DOMContentLoaded', function() {
                 const useTls = tlsSelect.value === 'true';
                 const port = useTls ? '443' : '80';
                 
-                // --- LOGIKA BARU SESUAI CONTOH ---
-                // Alamat (Address) sekarang menggunakan Bug CDN.
-                // Port adalah 443 untuk TLS, 80 untuk non-TLS.
-                // Host header (host) sekarang menggunakan Worker Host.
-                // SNI (sni) tetap menggunakan Worker Host.
-                // Ditambahkan parameter flow.
-                const uri = `${protocolSelect.value}://${uuid}@${bugCdn}:${port}` +
-                            `?encryption=none&type=ws&flow=` +
-                            `&host=${workerHost}` + // Host header adalah Worker Host
-                            `&security=${useTls ? 'tls' : 'none'}` +
-                            `&sni=${workerHost}` + // SNI adalah Worker Host
-                            `&path=${encodeURIComponent(path)}` +
-                            `#${encodeURIComponent(name)}`;
-                outputUris.push(uri);
+                let uri = '';
+
+                if (selectedProtocol === 'vless') {
+                    // --- Logika untuk VLESS ---
+                    uri = `vless://${uuid}@${bugCdn}:${port}` +
+                          `?encryption=none&type=ws&flow=` +
+                          `&host=${workerHost}` +
+                          `&security=${useTls ? 'tls' : 'none'}` +
+                          `&sni=${workerHost}` +
+                          `&path=${encodeURIComponent(path)}` +
+                          `#${encodeURIComponent(name)}`;
+                } else if (selectedProtocol === 'trojan') {
+                    // --- Logika untuk Trojan ---
+                    // Trojan menggunakan UUID sebagai password dan tidak memiliki parameter 'encryption' & 'flow'.
+                    uri = `trojan://${uuid}@${bugCdn}:${port}` +
+                          `?type=ws` +
+                          `&host=${workerHost}` +
+                          `&security=${useTls ? 'tls' : 'none'}` +
+                          `&sni=${workerHost}` +
+                          `&path=${encodeURIComponent(path)}` +
+                          `#${encodeURIComponent(name)}`;
+                }
+
+                if (uri) {
+                    outputUris.push(uri);
+                }
             }
         });
 
-        const resultString = outputUris.join('\n');
-        navigator.clipboard.writeText(resultString).then(() => {
-            showToast("Konfigurasi berhasil disalin!");
-        }).catch(err => {
-            console.error('Gagal menyalin: ', err);
-            showToast("Gagal menyalin ke clipboard.", true);
-        });
+        if (outputUris.length > 0) {
+            const resultString = outputUris.join('\n');
+            navigator.clipboard.writeText(resultString).then(() => {
+                showToast("Konfigurasi berhasil disalin!");
+            }).catch(err => {
+                console.error('Gagal menyalin: ', err);
+                showToast("Gagal menyalin ke clipboard.", true);
+            });
+        }
     }
 
     function openSettingsModal() { settingsModalOverlay.classList.add('visible'); }
