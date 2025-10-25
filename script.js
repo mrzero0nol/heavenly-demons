@@ -528,23 +528,38 @@ document.addEventListener('DOMContentLoaded', function() {
             domain = 'https://' + domain;
         }
 
-        wildcardTestResult.textContent = `Menguji ${domain}...`;
+        wildcardTestResult.textContent = `Memeriksa ${domain}...`;
         wildcardTestResult.style.color = 'var(--text-light)';
-        const startTime = Date.now();
 
         try {
-            // Menggunakan mode 'no-cors' untuk menghindari error CORS,
-            // karena kita hanya peduli jika domain dapat dijangkau, bukan membaca responsnya.
-            const response = await fetch(domain, { method: 'HEAD', mode: 'no-cors', signal: AbortSignal.timeout(5000) });
-            const duration = Date.now() - startTime;
+            // Kita menggunakan 'no-cors' karena kita tidak perlu membaca body,
+            // tapi kita akan mencoba memeriksa header jika memungkinkan.
+            // Peringatan: Header 'Server' biasanya tidak terekspos ke JS karena kebijakan CORS.
+            // Pendekatan ini mungkin tidak selalu berhasil, tapi ini adalah yang terbaik
+            // yang bisa dilakukan tanpa proxy di sisi server.
+            const response = await fetch(domain, { method: 'HEAD', mode: 'no-cors', signal: AbortSignal.timeout(8000) });
 
-            // Dalam mode no-cors, status akan 0, jadi kita anggap berhasil jika tidak ada error.
-            wildcardTestResult.textContent = `SUKSES!\nDomain merespons dalam ${duration} md.`;
-            wildcardTestResult.style.color = 'var(--cyber-cyan)';
+            // Dalam mode no-cors, kita tidak bisa mengakses header secara langsung.
+            // Jadi, kita akan mengandalkan pesan error untuk mendeteksi beberapa hal.
+            // Namun, untuk Cloudflare, kita bisa mencoba trik lain.
+            // Kita akan mencoba fetch ke path khusus Cloudflare. Jika berhasil, kemungkinan besar itu Cloudflare.
+            // Ini bukan jaminan 100%, tapi merupakan indikator yang kuat.
+
+            // Trik: Coba akses path yang sering ada di balik Cloudflare
+            const cfCheckResponse = await fetch(`${domain}/cdn-cgi/trace`, { method: 'GET', signal: AbortSignal.timeout(8000) });
+            const cfCheckText = await cfCheckResponse.text();
+
+            if (cfCheckText.includes('fl=') && cfCheckText.includes('h=')) {
+                 wildcardTestResult.textContent = `SUKSES!\nDomain ini kemungkinan besar menggunakan Cloudflare.`;
+                 wildcardTestResult.style.color = 'var(--primary-green)';
+            } else {
+                 wildcardTestResult.textContent = `INFO\nTidak ada tanda-tanda jelas Cloudflare. Domain mungkin tidak menggunakannya atau menyembunyikan jejaknya.`;
+                 wildcardTestResult.style.color = 'var(--cyber-cyan)';
+            }
 
         } catch (error) {
-            console.error("Wildcard Test Error:", error);
-            wildcardTestResult.textContent = `GAGAL!\nError: ${error.name === 'AbortError' ? 'Timeout' : 'Tidak dapat dijangkau'}. Periksa konsol untuk detail.`;
+            console.error("Cloudflare Check Error:", error);
+            wildcardTestResult.textContent = `GAGAL!\nTidak dapat terhubung ke domain. Mungkin down atau salah ketik.\nError: ${error.name}`;
             wildcardTestResult.style.color = 'var(--danger-color)';
         }
     }
