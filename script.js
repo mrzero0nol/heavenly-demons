@@ -6,7 +6,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // --- PENGATURAN ---
     const PROXY_LIST_URL = 'https://raw.githubusercontent.com/FoolVPN-ID/Nautica/main/proxyList.txt';
-    const DEFAULT_PING_TESTER_URL = 'https://ping-tester-worker.zallstore.workers.dev'; // URL Worker Ping Default
+    const DEFAULT_PING_TESTER_URL = 'https://test-ping.fazo0zero.workers.dev/ping'; // URL Worker Ping Default
 
     // --- Referensi Elemen DOM ---
     const serverListContainer = document.getElementById('server-list');
