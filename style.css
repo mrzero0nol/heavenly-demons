@@ -421,6 +421,72 @@ header {
     box-shadow: 0 0 10px var(--cyber-cyan);
 }
 
+/* --- Gaya Daftar Pengaturan Tersimpan --- */
+.saved-settings-container {
+    margin-top: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #333;
+    padding: 5px;
+    background-color: var(--surface-light);
+}
+
+.saved-settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #2a2a2a;
+    transition: background-color 0.2s ease;
+}
+.saved-settings-item:last-child {
+    border-bottom: none;
+}
+.saved-settings-item:hover {
+    background-color: #252525;
+}
+
+.settings-text {
+    flex-grow: 1;
+    font-size: 0.9em;
+    color: var(--text-light);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.settings-text strong {
+    color: var(--cyber-cyan);
+}
+
+.settings-actions button {
+    background: transparent;
+    border: 1px solid;
+    padding: 4px 8px;
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 5px;
+}
+.settings-actions .use-btn {
+    color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+.settings-actions .use-btn:hover {
+    background-color: var(--primary-green);
+    color: var(--text-dark);
+    box-shadow: 0 0 8px var(--primary-green);
+}
+.settings-actions .delete-btn {
+    color: var(--primary-demonic);
+    border-color: var(--primary-demonic);
+}
+.settings-actions .delete-btn:hover {
+    background-color: var(--primary-demonic);
+    color: var(--text-light);
+    box-shadow: 0 0 8px var(--primary-demonic);
+}
+
 .test-result {
     margin-top: 15px;
     padding: 10px;
