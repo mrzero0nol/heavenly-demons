@@ -27,8 +27,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Tombol Aksi Modal
     const settingsDoneBtn = document.getElementById('settings-done-btn');
+    const saveSettingsBtn = document.getElementById('save-settings-btn'); // Tombol baru
     const addServerBtn = document.getElementById('add-server-btn');
     const runWildcardTestBtn = document.getElementById('run-wildcard-test-btn');
+
+    // Kontainer Daftar Pengaturan
+    const savedSettingsListContainer = document.getElementById('saved-settings-list'); // Kontainer baru
 
     // Tombol Pembuka Modal
     const customServerBtn = document.getElementById('custom-server-btn');
@@ -124,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setupPingMode();
             detectUserInfo();
             populateSettingsFromUrl();
+            loadAndRenderSettings(); // Muat pengaturan yang disimpan
 
             // Muat server kustom terlebih dahulu
             const customServers = JSON.parse(localStorage.getItem('customServers')) || [];
@@ -366,6 +371,98 @@ document.addEventListener('DOMContentLoaded', function() {
             uuidInput.value = generateUUIDv4();
         }
     }
+
+    // =======================================================
+    // FUNGSI SIMPAN & MUAT PENGATURAN HOST/SNI
+    // =======================================================
+    function renderSavedSettings(settings) {
+        savedSettingsListContainer.innerHTML = '';
+        if (!settings || settings.length === 0) {
+            savedSettingsListContainer.innerHTML = '<p style="font-size: 0.8em; color: #888;">Belum ada pengaturan yang disimpan.</p>';
+            return;
+        }
+
+        settings.forEach((setting, index) => {
+            const item = document.createElement('div');
+            item.className = 'saved-settings-item';
+            item.innerHTML = `
+                <div class="settings-text" title="Host: ${setting.host}\nSNI: ${setting.sni}">
+                    <strong>Host:</strong> ${setting.host} <br>
+                    <strong>SNI:</strong> ${setting.sni}
+                </div>
+                <div class="settings-actions">
+                    <button class="use-btn" data-index="${index}">Gunakan</button>
+                    <button class="delete-btn" data-index="${index}">Hapus</button>
+                </div>
+            `;
+            savedSettingsListContainer.appendChild(item);
+        });
+    }
+
+    function loadAndRenderSettings() {
+        const savedSettings = JSON.parse(localStorage.getItem('savedHostSniSettings')) || [];
+        renderSavedSettings(savedSettings);
+
+        // Muat pengaturan terakhir yang digunakan jika ada
+        const lastUsedSetting = JSON.parse(localStorage.getItem('lastUsedHostSni'));
+        if (lastUsedSetting) {
+            bugCdnInput.value = lastUsedSetting.host || '';
+            workerHostInput.value = lastUsedSetting.sni || '';
+        }
+    }
+
+    function handleSaveSettings() {
+        const host = bugCdnInput.value.trim();
+        const sni = workerHostInput.value.trim();
+
+        if (!host || !sni) {
+            showToast("Host dan SNI tidak boleh kosong untuk disimpan.", true);
+            return;
+        }
+
+        let savedSettings = JSON.parse(localStorage.getItem('savedHostSniSettings')) || [];
+
+        // Cek duplikat
+        const isDuplicate = savedSettings.some(s => s.host === host && s.sni === sni);
+        if (isDuplicate) {
+            showToast("Pengaturan ini sudah ada.", true);
+            return;
+        }
+
+        savedSettings.push({ host, sni });
+        localStorage.setItem('savedHostSniSettings', JSON.stringify(savedSettings));
+
+        // Simpan juga sebagai yang terakhir digunakan
+        localStorage.setItem('lastUsedHostSni', JSON.stringify({ host, sni }));
+
+        renderSavedSettings(savedSettings);
+        showToast("Pengaturan berhasil disimpan!");
+    }
+
+    function handleUseSetting(index) {
+        const savedSettings = JSON.parse(localStorage.getItem('savedHostSniSettings')) || [];
+        if (savedSettings[index]) {
+            const { host, sni } = savedSettings[index];
+            bugCdnInput.value = host;
+            workerHostInput.value = sni;
+
+            // Simpan sebagai yang terakhir digunakan
+            localStorage.setItem('lastUsedHostSni', JSON.stringify({ host, sni }));
+            showToast("Pengaturan dimuat.");
+        }
+    }
+
+    function handleDeleteSetting(index) {
+        if (!confirm('Anda yakin ingin menghapus pengaturan ini?')) {
+            return;
+        }
+        let savedSettings = JSON.parse(localStorage.getItem('savedHostSniSettings')) || [];
+        savedSettings.splice(index, 1);
+        localStorage.setItem('savedHostSniSettings', JSON.stringify(savedSettings));
+        renderSavedSettings(savedSettings);
+        showToast("Pengaturan dihapus.");
+    }
+
 
     // =======================================================
     // FUNGSI CUSTOM SERVER
@@ -871,10 +968,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     settingsDoneBtn.addEventListener('click', closeSettingsModal);
+    saveSettingsBtn.addEventListener('click', handleSaveSettings); // Listener baru
     addServerBtn.addEventListener('click', handleAddCustomServer);
     runWildcardTestBtn.addEventListener('click', handleWildcardTest);
     savePingSettingsBtn.addEventListener('click', handleSavePingSettings);
     saveServerChangesBtn.addEventListener('click', handleSaveChanges); // Listener baru
+
+    // Event delegation for saved settings list
+    savedSettingsListContainer.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target.classList.contains('use-btn')) {
+            const index = parseInt(target.dataset.index, 10);
+            handleUseSetting(index);
+        }
+        if (target.classList.contains('delete-btn')) {
+            const index = parseInt(target.dataset.index, 10);
+            handleDeleteSetting(index);
+        }
+    });
 
     exportBtn.addEventListener('click', exportProxies);
     repingBtn.addEventListener('click', () => {
